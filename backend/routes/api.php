@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClinicController;
 use App\Http\Controllers\Api\ContentItemController;
+use App\Http\Controllers\Api\ContentStateController;
 use App\Http\Controllers\Api\MediaAssetController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,11 @@ Route::prefix('auth')->group(function () {
 // ─── Clinics (solo agencias) ─────────────────────────────────────────────────
 Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
     Route::get('clinics', [ClinicController::class, 'index']);
+});
+
+// ─── Transiciones de estado (agencias y clínicas) ────────────────────────────
+Route::middleware(['auth:sanctum', 'role:agency,clinic'])->group(function () {
+    Route::post('content-items/{contentItem}/transition', [ContentStateController::class, 'transition']);
 });
 
 // ─── Content Items + Media (solo agencias) ───────────────────────────────────

@@ -63,7 +63,7 @@
 
           <div class="flex gap-2 shrink-0">
             <RouterLink
-              :to="`/content-items/${item.id}/edit`"
+              :to="`/content-items/${item.id}`"
               class="text-sm text-blue-600 hover:underline"
             >
               Editar

@@ -40,4 +40,9 @@ class ContentItem extends Model
     {
         return $this->hasMany(MediaAsset::class);
     }
+
+    public function stateHistories(): HasMany
+    {
+        return $this->hasMany(StateHistory::class)->orderBy('created_at');
+    }
 }
