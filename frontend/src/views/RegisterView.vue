@@ -18,7 +18,7 @@ async function submit() {
   loading.value = true
   try {
     await auth.register(name.value, email.value, password.value, password_confirmation.value)
-    router.push({ name: 'dashboard' })
+    router.push({ name: 'content-list' })
   } catch (e) {
     const errors = e.response?.data?.errors
     if (errors) {

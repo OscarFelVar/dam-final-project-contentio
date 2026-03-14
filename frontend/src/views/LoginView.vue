@@ -16,7 +16,7 @@ async function submit() {
   loading.value = true
   try {
     await auth.login(email.value, password.value)
-    router.push({ name: 'dashboard' })
+    router.push({ name: 'content-list' })
   } catch (e) {
     error.value = e.response?.data?.message ?? 'Error al iniciar sesion'
   } finally {

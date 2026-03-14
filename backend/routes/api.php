@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClinicController;
 use App\Http\Controllers\Api\ContentItemController;
 use App\Http\Controllers\Api\MediaAssetController;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,11 @@ Route::prefix('auth')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me',      [AuthController::class, 'me']);
     });
+});
+
+// ─── Clinics (solo agencias) ─────────────────────────────────────────────────
+Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
+    Route::get('clinics', [ClinicController::class, 'index']);
 });
 
 // ─── Content Items + Media (solo agencias) ───────────────────────────────────
