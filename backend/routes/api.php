@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContentItemController;
+use App\Http\Controllers\Api\MediaAssetController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -14,9 +15,15 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// ─── Content Items (solo agencias) ───────────────────────────────────────────
+// ─── Content Items + Media (solo agencias) ───────────────────────────────────
 Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
     Route::apiResource('content-items', ContentItemController::class);
+
+    // Media assets anidados bajo su content item
+    // POST   /content-items/{contentItem}/media
+    // DELETE /content-items/{contentItem}/media/{mediaAsset}
+    Route::post('content-items/{contentItem}/media', [MediaAssetController::class, 'store']);
+    Route::delete('content-items/{contentItem}/media/{mediaAsset}', [MediaAssetController::class, 'destroy']);
 });
 
 // Rutas de prueba para el middleware de roles (se eliminar­n en sprints posteriores)
