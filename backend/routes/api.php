@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ContentItemController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -13,7 +14,12 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// Rutas de prueba para el middleware de roles (se eliminar�n en sprints posteriores)
+// ─── Content Items (solo agencias) ───────────────────────────────────────────
+Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
+    Route::apiResource('content-items', ContentItemController::class);
+});
+
+// Rutas de prueba para el middleware de roles (se eliminar­n en sprints posteriores)
 Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
     Route::get('test/agency-only', fn() => response()->json(['message' => 'Hello agency!']));
 });
