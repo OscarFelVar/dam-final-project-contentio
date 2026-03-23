@@ -51,11 +51,12 @@ services:
     container_name: contentio_postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"      # accesible desde tu máquina (ej: DBeaver)
+      - "5433:5432"      # accesible desde tu máquina (ej: DBeaver) — 5433 evita conflicto con PostgreSQL nativo de Windows
     environment:
-      POSTGRES_DB:       contentio
-      POSTGRES_USER:     contentio
-      POSTGRES_PASSWORD: secret
+      POSTGRES_DB:               contentio
+      POSTGRES_USER:             contentio
+      POSTGRES_PASSWORD:         secret
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:

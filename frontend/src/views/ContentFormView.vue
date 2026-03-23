@@ -1,134 +1,8 @@
-<template>
-  <div class="min-h-screen bg-gray-50">
-
-    <!-- Header -->
-    <header class="bg-white shadow-sm">
-      <div class="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">
-        <RouterLink to="/content-items" class="text-gray-400 hover:text-gray-600">←</RouterLink>
-        <h1 class="text-xl font-bold text-gray-800">{{ isEdit ? 'Editar contenido' : 'Nuevo contenido' }}</h1>
-      </div>
-    </header>
-
-    <main class="max-w-2xl mx-auto px-4 py-8">
-      <form @submit.prevent="handleSubmit" class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-5">
-
-        <!-- Título -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
-          <input
-            v-model="form.title"
-            type="text"
-            placeholder="Ej: Post semana 1 - Tratamiento facial"
-            required
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <!-- Tipo -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-          <select
-            v-model="form.type"
-            required
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="" disabled>Selecciona un tipo</option>
-            <option value="post">Post</option>
-            <option value="reel">Reel</option>
-            <option value="story">Story</option>
-          </select>
-        </div>
-
-        <!-- Clínica (solo en creación) -->
-        <div v-if="!isEdit">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Clínica</label>
-          <select
-            v-model="form.clinic_id"
-            required
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="" disabled>Selecciona una clínica</option>
-            <option v-for="clinic in clinics" :key="clinic.id" :value="clinic.id">
-              {{ clinic.name }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Fecha límite -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha límite <span class="text-gray-400">(opcional)</span></label>
-          <input
-            v-model="form.deadline_at"
-            type="date"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <!-- Archivo (opcional) -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Archivo <span class="text-gray-400">(opcional — puedes subirlo después)</span>
-          </label>
-          <input
-            ref="fileInput"
-            type="file"
-            accept="image/*,video/*"
-            @change="onFileChange"
-            class="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-          />
-          <p v-if="selectedFile" class="text-xs text-gray-400 mt-1">{{ selectedFile.name }} ({{ formatSize(selectedFile.size) }})</p>
-        </div>
-
-        <!-- Archivos existentes (en edición) -->
-        <div v-if="isEdit && currentItem?.media_assets?.length">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Archivos subidos</label>
-          <ul class="space-y-2">
-            <li
-              v-for="asset in currentItem.media_assets"
-              :key="asset.id"
-              class="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 text-sm"
-            >
-              <span class="text-gray-600 truncate">{{ asset.file_name }}</span>
-              <button
-                type="button"
-                @click="handleDeleteMedia(asset)"
-                class="text-red-500 hover:underline text-xs ml-3 shrink-0"
-              >
-                Eliminar
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Error -->
-        <p v-if="error" class="text-sm text-red-500">{{ error }}</p>
-
-        <!-- Botones -->
-        <div class="flex gap-3 pt-2">
-          <button
-            type="submit"
-            :disabled="submitting"
-            class="flex-1 bg-blue-600 text-white text-sm py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
-          >
-            {{ submitting ? 'Guardando...' : (isEdit ? 'Guardar cambios' : 'Crear contenido') }}
-          </button>
-          <RouterLink
-            to="/content-items"
-            class="flex-1 text-center border border-gray-300 text-sm py-2 rounded-lg hover:bg-gray-50 transition"
-          >
-            Cancelar
-          </RouterLink>
-        </div>
-
-      </form>
-    </main>
-  </div>
-</template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useContentStore } from '../stores/content'
+import AppLayout from '../components/AppLayout.vue'
 import api from '../api/axios'
 
 const route  = useRoute()
@@ -138,20 +12,19 @@ const store  = useContentStore()
 const isEdit = computed(() => route.params.id !== 'new' && !!route.params.id)
 
 const form = ref({ title: '', type: '', clinic_id: '', deadline_at: '' })
-const clinics     = ref([])
+const clinics      = ref([])
 const selectedFile = ref(null)
-const fileInput   = ref(null)
-const submitting  = ref(false)
-const error       = ref(null)
+const fileInput    = ref(null)
+const submitting   = ref(false)
+const error        = ref(null)
+const isDragging   = ref(false)
 
 const currentItem = computed(() => store.items.find(i => i.id === Number(route.params.id)))
 
 onMounted(async () => {
-  // Cargar clínicas del usuario
   const { data } = await api.get('/clinics')
   clinics.value = data
 
-  // Si es edición, cargar datos del item
   if (isEdit.value) {
     if (store.items.length === 0) await store.fetchItems()
     const item = currentItem.value
@@ -167,13 +40,16 @@ function onFileChange(e) {
   selectedFile.value = e.target.files[0] ?? null
 }
 
-async function handleSubmit() {
-  error.value   = null
-  submitting.value = true
+function onDrop(e) {
+  isDragging.value = false
+  selectedFile.value = e.dataTransfer.files[0] ?? null
+}
 
+async function handleSubmit() {
+  error.value    = null
+  submitting.value = true
   try {
     let item
-
     if (isEdit.value) {
       item = await store.updateItem(Number(route.params.id), {
         title:       form.value.title,
@@ -188,12 +64,9 @@ async function handleSubmit() {
         deadline_at: form.value.deadline_at || null,
       })
     }
-
-    // Si hay archivo seleccionado, subirlo inmediatamente
     if (selectedFile.value) {
       await store.uploadMedia(item.id, selectedFile.value)
     }
-
     router.push('/content-items')
   } catch (e) {
     error.value = e.response?.data?.message ?? 'Error al guardar. Revisa los datos.'
@@ -211,4 +84,239 @@ function formatSize(bytes) {
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB'
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
 }
+
+const typeOptions = [
+  { value: 'reel',  label: 'Reel',  icon: 'video' },
+  { value: 'post',  label: 'Post',  icon: 'image' },
+  { value: 'story', label: 'Story', icon: 'mobile' },
+]
 </script>
+
+<template>
+  <AppLayout>
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 mb-8 text-xs text-[#A08A7A]">
+      <RouterLink to="/content-items" class="hover:text-[#7D5A44] transition-colors">Contenidos</RouterLink>
+      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+      <span class="text-[#4A342A]">{{ isEdit ? 'Editar contenido' : 'Nuevo contenido' }}</span>
+    </div>
+
+    <!-- Page heading -->
+    <div class="mb-8">
+      <p class="text-xs tracking-[0.12em] uppercase text-[#A08A7A] mb-1">
+        {{ isEdit ? 'Edición' : 'Creación' }}
+      </p>
+      <h1 class="text-2xl text-[#4A342A] tracking-wide">
+        {{ isEdit ? 'Editar contenido' : 'Nuevo contenido' }}
+      </h1>
+    </div>
+
+    <!-- Form card -->
+    <div class="max-w-2xl">
+      <form @submit.prevent="handleSubmit" class="bg-white border border-[#E8E0D8] rounded-xl divide-y divide-[#F0EAE2]">
+
+        <!-- Type selector -->
+        <div class="p-6">
+          <label class="block text-xs tracking-[0.1em] uppercase text-[#7D5A44] mb-3">
+            Tipo de contenido
+          </label>
+          <div class="grid grid-cols-3 gap-3">
+            <button
+              v-for="t in typeOptions"
+              :key="t.value"
+              type="button"
+              @click="form.type = t.value"
+              class="border rounded-xl p-4 text-center transition-all duration-150"
+              :class="form.type === t.value
+                ? 'border-[#4A342A] bg-[#F5F1EA]'
+                : 'border-[#E8E0D8] hover:border-[#D7C9B8] hover:bg-[#FDFCFB]'"
+            >
+              <div
+                class="w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center"
+                :class="form.type === t.value ? 'bg-[#4A342A]' : 'bg-[#F5F1EA]'"
+              >
+                <!-- Video icon -->
+                <svg v-if="t.icon === 'video'"
+                  class="w-4 h-4"
+                  :class="form.type === t.value ? 'text-white' : 'text-[#A08A7A]'"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M15 10l4.553-2.069A1 1 0 0121 8.868V15.13a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                <!-- Image icon -->
+                <svg v-else-if="t.icon === 'image'"
+                  class="w-4 h-4"
+                  :class="form.type === t.value ? 'text-white' : 'text-[#A08A7A]'"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <!-- Mobile icon -->
+                <svg v-else
+                  class="w-4 h-4"
+                  :class="form.type === t.value ? 'text-white' : 'text-[#A08A7A]'"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <p class="text-xs" :class="form.type === t.value ? 'text-[#4A342A]' : 'text-[#7D5A44]'">
+                {{ t.label }}
+              </p>
+            </button>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div class="p-6">
+          <label class="block text-xs tracking-[0.1em] uppercase text-[#7D5A44] mb-2">Título</label>
+          <input
+            v-model="form.title"
+            type="text"
+            required
+            placeholder="Ej: Reel Primavera 2026"
+            class="input-contentio"
+          >
+        </div>
+
+        <!-- Clinic (only on create) -->
+        <div v-if="!isEdit" class="p-6">
+          <label class="block text-xs tracking-[0.1em] uppercase text-[#7D5A44] mb-2">Clínica</label>
+          <select v-model="form.clinic_id" required class="input-contentio appearance-none cursor-pointer">
+            <option value="" disabled>Selecciona una clínica</option>
+            <option v-for="c in clinics" :key="c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+
+        <!-- Deadline -->
+        <div class="p-6">
+          <label class="block text-xs tracking-[0.1em] uppercase text-[#7D5A44] mb-2">
+            Fecha límite
+            <span class="text-[#D7C9B8] normal-case tracking-normal">(opcional)</span>
+          </label>
+          <input v-model="form.deadline_at" type="date" class="input-contentio">
+        </div>
+
+        <!-- File upload -->
+        <div class="p-6">
+          <label class="block text-xs tracking-[0.1em] uppercase text-[#7D5A44] mb-2">
+            Archivo
+            <span class="text-[#D7C9B8] normal-case tracking-normal">(opcional — puedes subirlo después)</span>
+          </label>
+
+          <div
+            class="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200"
+            :class="isDragging
+              ? 'border-[#7D5A44] bg-[#F5F1EA]'
+              : 'border-[#D7C9B8] hover:border-[#7D5A44] hover:bg-[#FDFCFB]'"
+            @dragover.prevent="isDragging = true"
+            @dragleave="isDragging = false"
+            @drop.prevent="onDrop"
+            @click="fileInput?.click()"
+          >
+            <input
+              ref="fileInput"
+              type="file"
+              accept="image/*,video/*"
+              class="hidden"
+              @change="onFileChange"
+            >
+
+            <div v-if="!selectedFile">
+              <div class="w-10 h-10 bg-[#F5F1EA] rounded-xl flex items-center justify-center mx-auto mb-3">
+                <svg class="w-5 h-5 text-[#A08A7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+              </div>
+              <p class="text-sm text-[#7D5A44] mb-1">Arrastra tu archivo aquí</p>
+              <p class="text-xs text-[#D7C9B8]">o haz clic para seleccionar</p>
+              <p class="text-[10px] text-[#D7C9B8] mt-3 tracking-wide">JPG · PNG · MP4 · máx. 500 MB</p>
+            </div>
+
+            <div v-else class="flex items-center justify-center gap-3">
+              <div class="w-8 h-8 bg-[#F5F1EA] rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-[#7D5A44]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+              </div>
+              <div class="text-left">
+                <p class="text-sm text-[#4A342A]">{{ selectedFile.name }}</p>
+                <p class="text-xs text-[#A08A7A]">{{ formatSize(selectedFile.size) }}</p>
+              </div>
+              <button
+                type="button"
+                @click.stop="selectedFile = null"
+                class="text-[#D7C9B8] hover:text-[#A08A7A] transition-colors ml-2"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Existing media (edit mode) -->
+        <div v-if="isEdit && currentItem?.media_assets?.length" class="p-6">
+          <label class="block text-xs tracking-[0.1em] uppercase text-[#7D5A44] mb-3">
+            Archivos subidos
+          </label>
+          <ul class="space-y-2">
+            <li
+              v-for="asset in currentItem.media_assets"
+              :key="asset.id"
+              class="flex items-center justify-between bg-[#FDFCFB] border border-[#F0EAE2] rounded-lg px-4 py-2.5"
+            >
+              <span class="text-sm text-[#4A342A] truncate">{{ asset.file_name }}</span>
+              <button
+                type="button"
+                @click="handleDeleteMedia(asset)"
+                class="text-[#D7C9B8] hover:text-red-500 transition-colors ml-3 flex-shrink-0"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Error -->
+        <div v-if="error" class="px-6 py-4">
+          <p class="text-xs text-red-500 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
+            {{ error }}
+          </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="p-6 bg-[#FDFCFB] flex items-center justify-end gap-3 rounded-b-xl">
+          <RouterLink
+            to="/content-items"
+            class="px-5 py-2.5 border border-[#E8E0D8] text-[#A08A7A] rounded-lg text-sm hover:bg-white transition-colors"
+          >
+            Cancelar
+          </RouterLink>
+          <button
+            type="submit"
+            :disabled="submitting"
+            class="px-6 py-2.5 bg-[#4A342A] hover:bg-[#7D5A44] disabled:opacity-50 text-white rounded-lg text-sm transition-colors flex items-center gap-2"
+          >
+            <svg v-if="!submitting" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
+            {{ submitting ? 'Guardando...' : (isEdit ? 'Guardar cambios' : 'Crear contenido') }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </AppLayout>
+</template>
