@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AnnotationController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClinicController;
 use App\Http\Controllers\Api\CommentController;
@@ -33,6 +34,13 @@ Route::middleware(['auth:sanctum', 'role:agency,clinic'])->group(function () {
     Route::get('content-items/{contentItem}/comments', [CommentController::class, 'index']);
     Route::post('content-items/{contentItem}/comments', [CommentController::class, 'store']);
     Route::delete('content-items/{contentItem}/comments/{comment}', [CommentController::class, 'destroy']);
+
+    // GET    /media-assets/{mediaAsset}/annotations
+    // POST   /media-assets/{mediaAsset}/annotations
+    // DELETE /media-assets/{mediaAsset}/annotations/{annotation}
+    Route::get('media-assets/{mediaAsset}/annotations', [AnnotationController::class, 'index']);
+    Route::post('media-assets/{mediaAsset}/annotations', [AnnotationController::class, 'store']);
+    Route::delete('media-assets/{mediaAsset}/annotations/{annotation}', [AnnotationController::class, 'destroy']);
 });
 
 // ─── Content Items + Media (solo agencias) ───────────────────────────────────
