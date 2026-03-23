@@ -143,7 +143,7 @@ function formatDate(d) {
       <RouterLink
         v-for="(item, idx) in filtered"
         :key="item.id"
-        :to="`/content-items/${item.id}`"
+        :to="`/content-items/${item.id}/review`"
         class="card-lift bg-white border border-[#E8E0D8] rounded-xl overflow-hidden"
       >
         <!-- Thumbnail -->

@@ -4,13 +4,16 @@ import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import ContentListView from '../views/ContentListView.vue'
 import ContentFormView from '../views/ContentFormView.vue'
+import ContentReviewView from '../views/ContentReviewView.vue'
 
 const routes = [
-  { path: '/',                  redirect: '/dashboard' },
-  { path: '/login',             name: 'login',         component: LoginView,       meta: { requiresGuest: true } },
-  { path: '/dashboard',         name: 'dashboard',     component: DashboardView,   meta: { requiresAuth: true } },
-  { path: '/content-items',     name: 'content-list',  component: ContentListView, meta: { requiresAuth: true } },
-  { path: '/content-items/:id', name: 'content-form',  component: ContentFormView, meta: { requiresAuth: true } },
+  { path: '/',                         redirect: '/dashboard' },
+  { path: '/login',                    name: 'login',          component: LoginView,          meta: { requiresGuest: true } },
+  { path: '/dashboard',                name: 'dashboard',      component: DashboardView,      meta: { requiresAuth: true } },
+  { path: '/content-items',            name: 'content-list',   component: ContentListView,    meta: { requiresAuth: true } },
+  { path: '/content-items/new',        name: 'content-new',    component: ContentFormView,    meta: { requiresAuth: true } },
+  { path: '/content-items/:id/edit',   name: 'content-form',   component: ContentFormView,    meta: { requiresAuth: true } },
+  { path: '/content-items/:id/review', name: 'content-review', component: ContentReviewView,  meta: { requiresAuth: true } },
 ]
 
 const router = createRouter({
