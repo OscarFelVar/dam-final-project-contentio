@@ -45,4 +45,9 @@ class ContentItem extends Model
     {
         return $this->hasMany(StateHistory::class)->orderBy('created_at');
     }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->orderBy('created_at');
+    }
 }
