@@ -63,7 +63,7 @@ class ContentItemController extends Controller
     {
         $this->authorizeAccess($request, $contentItem);
 
-        return response()->json($contentItem->load(['clinic', 'mediaAssets', 'createdBy', 'stateHistories.user']));
+        return response()->json($contentItem->load(['clinic', 'mediaAssets.annotations.user', 'createdBy', 'stateHistories.user']));
     }
 
     // PUT /content-items/{contentItem}

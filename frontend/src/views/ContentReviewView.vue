@@ -4,6 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useContentStore } from '../stores/content'
 import AppLayout from '../components/AppLayout.vue'
+import AnnotationLayer from '../components/AnnotationLayer.vue'
+import ApprovalModal from '../components/ApprovalModal.vue'
+import StateTimeline from '../components/StateTimeline.vue'
 
 const route  = useRoute()
 const router = useRouter()
@@ -16,7 +19,8 @@ const loading  = ref(true)
 const error    = ref(null)
 const newComment = ref('')
 const submitting = ref(false)
-const transitioning = ref(false)
+const transitioning   = ref(false)
+const pendingTransition = ref(null)  // { status, label, style }
 
 const id = Number(route.params.id)
 
@@ -73,10 +77,27 @@ async function removeComment(commentId) {
   comments.value = comments.value.filter(c => c.id !== commentId)
 }
 
-async function doTransition(status) {
+async function handleDelete() {
+  if (!confirm(`¿Eliminar "${item.value.title}"? Esta acción no se puede deshacer.`)) return
+  await store.deleteItem(id)
+  router.push('/content-items')
+}
+
+function openTransitionModal(t) {
+  pendingTransition.value = t
+}
+
+async function confirmTransition(note) {
+  const { status } = pendingTransition.value
+  pendingTransition.value = null
   transitioning.value = true
   try {
     item.value = await store.transition(id, status)
+    // Si el usuario dejó una nota, publicarla como comentario
+    if (note) {
+      const comment = await store.addComment(id, note)
+      comments.value.push(comment)
+    }
   } catch (e) {
     alert('No se pudo realizar la transición.')
   } finally {
@@ -156,16 +177,33 @@ function formatDate(d) {
           <p class="text-xs text-[#A08A7A] mt-1">{{ item.clinic?.name }}</p>
         </div>
 
-        <!-- Estado + transiciones -->
+        <!-- Estado + acciones -->
         <div class="flex flex-col items-end gap-2 shrink-0">
           <span :class="['text-xs border rounded-full px-3 py-1', statusBadgeClass(item.status)]">
             {{ statusLabel(item.status) }}
           </span>
           <div class="flex gap-2 flex-wrap justify-end">
+            <!-- Editar (solo agencia, solo draft/in_correction) -->
+            <RouterLink
+              v-if="isAgency && (item.status === 'draft' || item.status === 'in_correction')"
+              :to="`/content-items/${item.id}/edit`"
+              class="text-xs border border-[#E8E0D8] text-[#7D5A44] hover:bg-[#F5F1EA] rounded-lg px-4 py-2 transition-colors"
+            >
+              Editar
+            </RouterLink>
+            <!-- Eliminar (solo agencia, solo draft) -->
+            <button
+              v-if="isAgency && item.status === 'draft'"
+              @click="handleDelete"
+              class="text-xs border border-red-200 text-red-500 hover:bg-red-50 rounded-lg px-4 py-2 transition-colors"
+            >
+              Eliminar
+            </button>
+            <!-- Transiciones de estado -->
             <button
               v-for="t in availableTransitions"
               :key="t.status"
-              @click="doTransition(t.status)"
+              @click="openTransitionModal(t)"
               :disabled="transitioning"
               :class="['text-xs rounded-lg px-4 py-2 transition-colors disabled:opacity-50', transitionBtnClass(t.style)]"
             >
@@ -189,12 +227,12 @@ function formatDate(d) {
           <div v-for="asset in item.media_assets" :key="asset.id"
             class="bg-white border border-[#E8E0D8] rounded-xl overflow-hidden">
 
-            <!-- Imagen -->
-            <img
+            <!-- Imagen con pines de anotación -->
+            <AnnotationLayer
               v-if="isImage(asset)"
-              :src="assetUrl(asset)"
-              :alt="asset.file_name"
-              class="w-full object-contain max-h-[500px] bg-[#F5F1EA]"
+              :asset="asset"
+              :readonly="item.status === 'approved' || item.status === 'rejected'"
+              :initialAnnotations="asset.annotations ?? null"
             />
 
             <!-- Vídeo -->
@@ -224,18 +262,10 @@ function formatDate(d) {
           </div>
 
           <!-- Historial de estados -->
-          <div v-if="item.state_histories?.length" class="mt-6">
-            <h2 class="text-sm text-[#4A342A] mb-3">Historial de estados</h2>
-            <div class="bg-white border border-[#E8E0D8] rounded-xl divide-y divide-[#F5F1EA]">
-              <div v-for="h in item.state_histories" :key="h.id" class="px-4 py-3 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span :class="['text-[10px] border rounded-full px-2 py-0.5', statusBadgeClass(h.to_status)]">
-                    {{ statusLabel(h.to_status) }}
-                  </span>
-                  <span class="text-xs text-[#A08A7A]">por {{ h.user?.name ?? '—' }}</span>
-                </div>
-                <span class="text-[10px] text-[#D7C9B8]">{{ formatDate(h.created_at) }}</span>
-              </div>
+          <div class="mt-6">
+            <h2 class="text-sm text-[#4A342A] mb-4">Historial de estados</h2>
+            <div class="bg-white border border-[#E8E0D8] rounded-xl px-5 py-4">
+              <StateTimeline :histories="item.state_histories ?? []" />
             </div>
           </div>
         </div>
@@ -297,4 +327,13 @@ function formatDate(d) {
     </template>
 
   </AppLayout>
+
+  <!-- Modal de confirmación de transición -->
+  <ApprovalModal
+    :transition="pendingTransition"
+    :itemTitle="item?.title ?? ''"
+    @confirm="confirmTransition"
+    @cancel="pendingTransition = null"
+  />
+
 </template>

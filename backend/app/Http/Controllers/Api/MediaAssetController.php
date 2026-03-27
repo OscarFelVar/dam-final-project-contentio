@@ -30,8 +30,8 @@ class MediaAssetController extends Controller
 
         $file = $request->file('file');
 
-        // Guardamos en media/{content_item_id}/nombre-unico.ext
-        $path = $file->store("media/{$contentItem->id}", 'local');
+        // Guardamos en media/{content_item_id}/nombre-unico.ext (disco public → accesible por URL)
+        $path = $file->store("media/{$contentItem->id}", 'public');
 
         $asset = MediaAsset::create([
             'content_item_id' => $contentItem->id,
@@ -52,7 +52,7 @@ class MediaAssetController extends Controller
         // Verificar que el asset pertenece al content item de la URL
         abort_if($mediaAsset->content_item_id !== $contentItem->id, 404);
 
-        Storage::disk('local')->delete($mediaAsset->file_path);
+        Storage::disk('public')->delete($mediaAsset->file_path);
         $mediaAsset->delete();
 
         return response()->json(null, 204);

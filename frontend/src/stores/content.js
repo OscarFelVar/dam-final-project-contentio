@@ -82,11 +82,26 @@ export const useContentStore = defineStore('content', () => {
     await api.delete(`/content-items/${contentItemId}/comments/${commentId}`)
   }
 
+  async function fetchAnnotations(mediaAssetId) {
+    const { data } = await api.get(`/media-assets/${mediaAssetId}/annotations`)
+    return data
+  }
+
+  async function addAnnotation(mediaAssetId, payload) {
+    const { data } = await api.post(`/media-assets/${mediaAssetId}/annotations`, payload)
+    return data
+  }
+
+  async function deleteAnnotation(mediaAssetId, annotationId) {
+    await api.delete(`/media-assets/${mediaAssetId}/annotations/${annotationId}`)
+  }
+
   return {
     items, loading, error,
     fetchItems, fetchItem, createItem, updateItem, deleteItem,
     uploadMedia, deleteMedia,
     transition,
     fetchComments, addComment, deleteComment,
+    fetchAnnotations, addAnnotation, deleteAnnotation,
   }
 })

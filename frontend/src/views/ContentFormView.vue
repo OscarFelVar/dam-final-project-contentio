@@ -18,6 +18,7 @@ const fileInput    = ref(null)
 const submitting   = ref(false)
 const error        = ref(null)
 const isDragging   = ref(false)
+const createdItem  = ref(null)  // evita duplicados si falla el upload
 
 const currentItem = computed(() => store.items.find(i => i.id === Number(route.params.id)))
 
@@ -46,7 +47,7 @@ function onDrop(e) {
 }
 
 async function handleSubmit() {
-  error.value    = null
+  error.value      = null
   submitting.value = true
   try {
     let item
@@ -57,12 +58,16 @@ async function handleSubmit() {
         deadline_at: form.value.deadline_at || null,
       })
     } else {
-      item = await store.createItem({
-        clinic_id:   form.value.clinic_id,
-        title:       form.value.title,
-        type:        form.value.type,
-        deadline_at: form.value.deadline_at || null,
-      })
+      // Si ya se creó el item en un intento anterior, no crear otro
+      if (!createdItem.value) {
+        createdItem.value = await store.createItem({
+          clinic_id:   form.value.clinic_id,
+          title:       form.value.title,
+          type:        form.value.type,
+          deadline_at: form.value.deadline_at || null,
+        })
+      }
+      item = createdItem.value
     }
     if (selectedFile.value) {
       await store.uploadMedia(item.id, selectedFile.value)
