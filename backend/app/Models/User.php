@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -35,8 +36,15 @@ class User extends Authenticatable
 
     // ─── Relaciones ───────────────────────────────────────────────
 
+    // Clínicas que posee esta agencia (owner)
     public function clinics(): HasMany
     {
         return $this->hasMany(Clinic::class);
+    }
+
+    // Clínicas a las que está asignado este usuario clinic (tabla pivot clinic_user)
+    public function assignedClinics(): BelongsToMany
+    {
+        return $this->belongsToMany(Clinic::class, 'clinic_user');
     }
 }
