@@ -21,7 +21,10 @@ Route::prefix('auth')->group(function () {
 
 // ─── Clinics (solo agencias) ─────────────────────────────────────────────────
 Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
-    Route::get('clinics', [ClinicController::class, 'index']);
+    Route::get('clinics',          [ClinicController::class, 'index']);
+    Route::post('clinics',         [ClinicController::class, 'store']);
+    Route::put('clinics/{clinic}', [ClinicController::class, 'update']);
+    Route::delete('clinics/{clinic}', [ClinicController::class, 'destroy']);
 });
 
 // ─── Transiciones de estado y comentarios (agencias y clínicas) ──────────────
@@ -43,15 +46,25 @@ Route::middleware(['auth:sanctum', 'role:agency,clinic'])->group(function () {
     Route::delete('media-assets/{mediaAsset}/annotations/{annotation}', [AnnotationController::class, 'destroy']);
 });
 
-// ─── Content Items + Media (solo agencias) ───────────────────────────────────
-Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
-    Route::apiResource('content-items', ContentItemController::class);
+// ─── Content Items (lectura: agencia y clinic; escritura: solo agencia) ───────
+Route::middleware(['auth:sanctum', 'role:agency,clinic'])->group(function () {
+    Route::get('content-items',            [ContentItemController::class, 'index']);
+    Route::get('content-items/{contentItem}', [ContentItemController::class, 'show']);
+});
 
-    // Media assets anidados bajo su content item
-    // POST   /content-items/{contentItem}/media
-    // DELETE /content-items/{contentItem}/media/{mediaAsset}
+Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
+    Route::post('content-items',               [ContentItemController::class, 'store']);
+    Route::put('content-items/{contentItem}',  [ContentItemController::class, 'update']);
+    Route::delete('content-items/{contentItem}', [ContentItemController::class, 'destroy']);
+
+    // Media assets
     Route::post('content-items/{contentItem}/media', [MediaAssetController::class, 'store']);
     Route::delete('content-items/{contentItem}/media/{mediaAsset}', [MediaAssetController::class, 'destroy']);
+
+    // Usuarios de clínica
+    Route::get('clinics/{clinic}/users',          [ClinicController::class, 'indexUsers']);
+    Route::post('clinics/{clinic}/users',         [ClinicController::class, 'storeUser']);
+    Route::delete('clinics/{clinic}/users/{user}', [ClinicController::class, 'destroyUser']);
 });
 
 // Rutas de prueba para el middleware de roles (se eliminar­n en sprints posteriores)

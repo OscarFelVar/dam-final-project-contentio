@@ -64,10 +64,24 @@ function isActive(path) {
         Contenidos
       </RouterLink>
 
+      <RouterLink
+        to="/clinics"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150"
+        :class="isActive('/clinics')
+          ? 'bg-white/10 text-white border-l-2 border-white/40'
+          : 'text-[#D7C9B8] hover:bg-white/8 hover:text-white'"
+      >
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+        </svg>
+        Clínicas
+      </RouterLink>
+
       <a
         href="#"
         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#D7C9B8]/40 cursor-not-allowed"
-        title="Disponible en Sprint 4"
+        title="Próximamente"
       >
         <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
