@@ -1,1 +1,46 @@
 @import "tailwindcss";
+
+* {
+  font-family: 'ABeeZee', sans-serif;
+}
+
+body {
+  background-color: #FAF9F6;
+  color: #4A342A;
+}
+
+/* Sidebar dot texture */
+.sidebar-bg {
+  background-color: #4A342A;
+  background-image: radial-gradient(circle at 1px 1px, rgba(250,249,246,0.04) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Input focus ring */
+.input-contentio {
+  border: 1px solid #D7C9B8;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: #4A342A;
+  background: white;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input-contentio:focus {
+  outline: none;
+  border-color: #4A342A;
+  box-shadow: 0 0 0 3px rgba(74,52,42,0.08);
+}
+.input-contentio::placeholder {
+  color: #D7C9B8;
+}
+
+/* Card hover lift */
+.card-lift {
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.card-lift:hover {
+  box-shadow: 0 6px 24px rgba(74,52,42,0.1);
+  transform: translateY(-1px);
+}

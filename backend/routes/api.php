@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\AnnotationController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClinicController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ContentItemController;
 use App\Http\Controllers\Api\ContentStateController;
 use App\Http\Controllers\Api\MediaAssetController;
@@ -22,9 +24,23 @@ Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
     Route::get('clinics', [ClinicController::class, 'index']);
 });
 
-// ─── Transiciones de estado (agencias y clínicas) ────────────────────────────
+// ─── Transiciones de estado y comentarios (agencias y clínicas) ──────────────
 Route::middleware(['auth:sanctum', 'role:agency,clinic'])->group(function () {
     Route::post('content-items/{contentItem}/transition', [ContentStateController::class, 'transition']);
+
+    // GET    /content-items/{contentItem}/comments
+    // POST   /content-items/{contentItem}/comments
+    // DELETE /content-items/{contentItem}/comments/{comment}
+    Route::get('content-items/{contentItem}/comments', [CommentController::class, 'index']);
+    Route::post('content-items/{contentItem}/comments', [CommentController::class, 'store']);
+    Route::delete('content-items/{contentItem}/comments/{comment}', [CommentController::class, 'destroy']);
+
+    // GET    /media-assets/{mediaAsset}/annotations
+    // POST   /media-assets/{mediaAsset}/annotations
+    // DELETE /media-assets/{mediaAsset}/annotations/{annotation}
+    Route::get('media-assets/{mediaAsset}/annotations', [AnnotationController::class, 'index']);
+    Route::post('media-assets/{mediaAsset}/annotations', [AnnotationController::class, 'store']);
+    Route::delete('media-assets/{mediaAsset}/annotations/{annotation}', [AnnotationController::class, 'destroy']);
 });
 
 // ─── Content Items + Media (solo agencias) ───────────────────────────────────

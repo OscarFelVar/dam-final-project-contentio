@@ -56,5 +56,52 @@ export const useContentStore = defineStore('content', () => {
     if (item) item.media_assets = item.media_assets.filter(a => a.id !== mediaId)
   }
 
-  return { items, loading, error, fetchItems, createItem, updateItem, deleteItem, uploadMedia, deleteMedia }
+  async function fetchItem(id) {
+    const { data } = await api.get(`/content-items/${id}`)
+    return data
+  }
+
+  async function transition(id, status) {
+    const { data } = await api.post(`/content-items/${id}/transition`, { status })
+    const index = items.value.findIndex(i => i.id === id)
+    if (index !== -1) items.value[index] = data
+    return data
+  }
+
+  async function fetchComments(contentItemId) {
+    const { data } = await api.get(`/content-items/${contentItemId}/comments`)
+    return data
+  }
+
+  async function addComment(contentItemId, body) {
+    const { data } = await api.post(`/content-items/${contentItemId}/comments`, { body })
+    return data
+  }
+
+  async function deleteComment(contentItemId, commentId) {
+    await api.delete(`/content-items/${contentItemId}/comments/${commentId}`)
+  }
+
+  async function fetchAnnotations(mediaAssetId) {
+    const { data } = await api.get(`/media-assets/${mediaAssetId}/annotations`)
+    return data
+  }
+
+  async function addAnnotation(mediaAssetId, payload) {
+    const { data } = await api.post(`/media-assets/${mediaAssetId}/annotations`, payload)
+    return data
+  }
+
+  async function deleteAnnotation(mediaAssetId, annotationId) {
+    await api.delete(`/media-assets/${mediaAssetId}/annotations/${annotationId}`)
+  }
+
+  return {
+    items, loading, error,
+    fetchItems, fetchItem, createItem, updateItem, deleteItem,
+    uploadMedia, deleteMedia,
+    transition,
+    fetchComments, addComment, deleteComment,
+    fetchAnnotations, addAnnotation, deleteAnnotation,
+  }
 })

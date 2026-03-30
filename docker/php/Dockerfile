@@ -34,14 +34,24 @@ RUN docker-php-ext-install \
     xml \
     dom \
     fileinfo \
-    pcntl
+    pcntl \
+    opcache
 
 # Composer 2.7 copiado desde su imagen oficial (multi-stage build)
 # Así no instalamos Composer manualmente — usamos la versión oficial
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
+# Configuración de límites de subida de archivos
+COPY docker/php/uploads.ini    /usr/local/etc/php/conf.d/uploads.ini
+COPY docker/php/opcache.ini    /usr/local/etc/php/conf.d/opcache.ini
+
+# Entrypoint: calienta las cachés de Laravel al arrancar el contenedor
+COPY docker/php/entrypoint.sh  /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 WORKDIR /var/www/backend
 
 # Puerto 9000: FastCGI (PHP-FPM escucha aquí, Nginx le envía peticiones)
 EXPOSE 9000
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm"]
