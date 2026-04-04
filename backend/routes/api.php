@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AnnotationController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClinicController;
@@ -65,6 +66,14 @@ Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
     Route::get('clinics/{clinic}/users',          [ClinicController::class, 'indexUsers']);
     Route::post('clinics/{clinic}/users',         [ClinicController::class, 'storeUser']);
     Route::delete('clinics/{clinic}/users/{user}', [ClinicController::class, 'destroyUser']);
+});
+
+// ─── Admin (solo super admin) ─────────────────────────────────────────────────
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('stats',          [AdminController::class, 'stats']);
+    Route::get('users',          [AdminController::class, 'indexUsers']);
+    Route::post('users',         [AdminController::class, 'storeUser']);
+    Route::delete('users/{user}', [AdminController::class, 'destroyUser']);
 });
 
 // Rutas de prueba para el middleware de roles (se eliminar­n en sprints posteriores)
