@@ -3,16 +3,25 @@ import { ref } from 'vue'
 import api from '../api/axios'
 
 export const useContentStore = defineStore('content', () => {
-  const items = ref([])
-  const loading = ref(false)
-  const error = ref(null)
+  const items      = ref([])
+  const loading    = ref(false)
+  const error      = ref(null)
+  const pagination = ref({ currentPage: 1, lastPage: 1, total: 0, perPage: 12 })
 
-  async function fetchItems() {
+  async function fetchItems(page = 1, status = null) {
     loading.value = true
-    error.value = null
+    error.value   = null
     try {
-      const { data } = await api.get('/content-items')
-      items.value = data
+      const params = { page }
+      if (status) params.status = status
+      const { data } = await api.get('/content-items', { params })
+      items.value = data.data
+      pagination.value = {
+        currentPage: data.current_page,
+        lastPage:    data.last_page,
+        total:       data.total,
+        perPage:     data.per_page,
+      }
     } catch (e) {
       error.value = 'Error al cargar los contenidos.'
     } finally {
@@ -97,7 +106,7 @@ export const useContentStore = defineStore('content', () => {
   }
 
   return {
-    items, loading, error,
+    items, loading, error, pagination,
     fetchItems, fetchItem, createItem, updateItem, deleteItem,
     uploadMedia, deleteMedia,
     transition,

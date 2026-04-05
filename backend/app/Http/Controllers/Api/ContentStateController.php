@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ContentItem;
 use App\Models\StateHistory;
+use App\Notifications\ContentStatusChanged;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class ContentStateController extends Controller
 {
@@ -61,10 +63,31 @@ class ContentStateController extends Controller
             ]);
         });
 
+        // Enviar notificación por email al destinatario correspondiente
+        $this->notifyStatusChange($contentItem, $fromStatus, $toStatus);
+
         return response()->json($contentItem->fresh()->load(['clinic', 'mediaAssets', 'stateHistories.user']));
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    private function notifyStatusChange(ContentItem $contentItem, string $fromStatus, string $toStatus): void
+    {
+        $notification = new ContentStatusChanged($contentItem, $fromStatus, $toStatus);
+
+        if ($toStatus === 'ready_for_review') {
+            // Notificar a la clínica por su email de contacto
+            $clinic = $contentItem->clinic;
+            if ($clinic?->contact_email) {
+                Notification::route('mail', $clinic->contact_email)
+                    ->notify($notification);
+            }
+        } else {
+            // Notificar al usuario de agencia que creó el contenido
+            $contentItem->load('createdBy');
+            $contentItem->createdBy?->notify($notification);
+        }
+    }
 
     private function isValidTransition(string $role, string $from, string $to): bool
     {

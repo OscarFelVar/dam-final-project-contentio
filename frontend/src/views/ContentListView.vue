@@ -1,17 +1,15 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useContentStore } from '../stores/content'
 import AppLayout from '../components/AppLayout.vue'
 
-const auth   = useAuthStore()
-const store  = useContentStore()
-const router = useRouter()
+const auth  = useAuthStore()
+const store = useContentStore()
 
 const activeFilter = ref('all')
 
-onMounted(() => store.fetchItems())
+onMounted(() => store.fetchItems(1))
 
 const filters = [
   { key: 'all',              label: 'Todos' },
@@ -22,14 +20,13 @@ const filters = [
   { key: 'rejected',         label: 'Rechazado' },
 ]
 
-const filtered = computed(() =>
-  activeFilter.value === 'all'
-    ? store.items
-    : store.items.filter(i => i.status === activeFilter.value)
-)
+function applyFilter(key) {
+  activeFilter.value = key
+  store.fetchItems(1, key === 'all' ? null : key)
+}
 
-function filterCount(key) {
-  return key === 'all' ? store.items.length : store.items.filter(i => i.status === key).length
+function goToPage(page) {
+  store.fetchItems(page, activeFilter.value === 'all' ? null : activeFilter.value)
 }
 
 function statusBadgeClass(status) {
@@ -100,18 +97,23 @@ function formatDate(d) {
     </div>
 
     <!-- Filter tabs -->
-    <div class="flex items-center gap-1 mb-6 flex-wrap">
-      <button
-        v-for="f in filters"
-        :key="f.key"
-        @click="activeFilter = f.key"
-        class="px-4 py-2 text-xs rounded-lg transition-colors"
-        :class="activeFilter === f.key
-          ? 'bg-[#4A342A] text-white'
-          : 'text-[#A08A7A] hover:bg-[#F5F1EA]'"
-      >
-        {{ f.label }} ({{ filterCount(f.key) }})
-      </button>
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div class="flex items-center gap-1 flex-wrap">
+        <button
+          v-for="f in filters"
+          :key="f.key"
+          @click="applyFilter(f.key)"
+          class="px-4 py-2 text-xs rounded-lg transition-colors"
+          :class="activeFilter === f.key
+            ? 'bg-[#4A342A] text-white'
+            : 'text-[#A08A7A] hover:bg-[#F5F1EA]'"
+        >
+          {{ f.label }}
+        </button>
+      </div>
+      <p v-if="!store.loading" class="text-xs text-[#A08A7A]">
+        {{ store.pagination.total }} resultado{{ store.pagination.total !== 1 ? 's' : '' }}
+      </p>
     </div>
 
     <!-- Loading -->
@@ -125,7 +127,7 @@ function formatDate(d) {
     </div>
 
     <!-- Empty state -->
-    <div v-else-if="filtered.length === 0" class="text-center py-20">
+    <div v-else-if="store.items.length === 0" class="text-center py-20">
       <div class="w-14 h-14 bg-[#F5F1EA] rounded-2xl flex items-center justify-center mx-auto mb-4">
         <svg class="w-6 h-6 text-[#D7C9B8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -141,7 +143,7 @@ function formatDate(d) {
     <!-- Content grid -->
     <div v-else class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <RouterLink
-        v-for="(item, idx) in filtered"
+        v-for="(item, idx) in store.items"
         :key="item.id"
         :to="`/content-items/${item.id}/review`"
         class="card-lift bg-white border border-[#E8E0D8] rounded-xl overflow-hidden"
@@ -189,6 +191,48 @@ function formatDate(d) {
           </div>
         </div>
       </RouterLink>
+    </div>
+
+    <!-- Paginación -->
+    <div
+      v-if="store.pagination.lastPage > 1"
+      class="flex items-center justify-center gap-1 mt-8"
+    >
+      <!-- Anterior -->
+      <button
+        @click="goToPage(store.pagination.currentPage - 1)"
+        :disabled="store.pagination.currentPage === 1"
+        class="px-3 py-2 text-xs rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-[#A08A7A] hover:bg-[#F5F1EA]"
+      >
+        ← Anterior
+      </button>
+
+      <!-- Páginas -->
+      <template v-for="p in store.pagination.lastPage" :key="p">
+        <button
+          v-if="p === 1 || p === store.pagination.lastPage || Math.abs(p - store.pagination.currentPage) <= 1"
+          @click="goToPage(p)"
+          class="w-8 h-8 text-xs rounded-lg transition-colors"
+          :class="p === store.pagination.currentPage
+            ? 'bg-[#4A342A] text-white'
+            : 'text-[#A08A7A] hover:bg-[#F5F1EA]'"
+        >
+          {{ p }}
+        </button>
+        <span
+          v-else-if="p === 2 && store.pagination.currentPage > 3 || p === store.pagination.lastPage - 1 && store.pagination.currentPage < store.pagination.lastPage - 2"
+          class="text-[#D7C9B8] text-xs px-1"
+        >…</span>
+      </template>
+
+      <!-- Siguiente -->
+      <button
+        @click="goToPage(store.pagination.currentPage + 1)"
+        :disabled="store.pagination.currentPage === store.pagination.lastPage"
+        class="px-3 py-2 text-xs rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-[#A08A7A] hover:bg-[#F5F1EA]"
+      >
+        Siguiente →
+      </button>
     </div>
 
   </AppLayout>

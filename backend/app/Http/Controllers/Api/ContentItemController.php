@@ -16,16 +16,29 @@ use Illuminate\Http\Request;
 
 class ContentItemController extends Controller
 {
-    // GET /content-items
-    // Devuelve todos los content items de las clínicas del usuario autenticado.
+    // GET /content-items?status=draft&page=1
+    // Agency: todos los items de sus clínicas.
+    // Clinic: items no-draft de las clínicas asignadas.
     public function index(Request $request): JsonResponse
     {
-        $items = ContentItem::with(['clinic', 'mediaAssets'])
-            ->whereHas('clinic', fn($q) => $q->where('user_id', $request->user()->id))
-            ->latest()
-            ->get();
+        $user   = $request->user();
+        $status = $request->query('status');
+        $query  = ContentItem::with(['clinic', 'mediaAssets'])->latest();
 
-        return response()->json($items);
+        if ($user->role === 'agency') {
+            $query->whereHas('clinic', fn($q) => $q->where('user_id', $user->id));
+            if ($status) {
+                $query->where('status', $status);
+            }
+        } else {
+            $clinicIds = $user->assignedClinics()->pluck('clinics.id');
+            $query->whereIn('clinic_id', $clinicIds)->where('status', '!=', 'draft');
+            if ($status && $status !== 'draft') {
+                $query->where('status', $status);
+            }
+        }
+
+        return response()->json($query->paginate(12));
     }
 
     // POST /content-items
@@ -103,11 +116,14 @@ class ContentItemController extends Controller
     // Verifica que el content item pertenece a una clínica del usuario autenticado.
     private function authorizeAccess(Request $request, ContentItem $contentItem): void
     {
-        $ownsClinic = $request->user()
-            ->clinics()
-            ->where('id', $contentItem->clinic_id)
-            ->exists();
+        $user = $request->user();
 
-        abort_if(! $ownsClinic, 403, 'Access denied.');
+        if ($user->role === 'agency') {
+            $hasAccess = $user->clinics()->where('id', $contentItem->clinic_id)->exists();
+        } else {
+            $hasAccess = $user->assignedClinics()->where('clinics.id', $contentItem->clinic_id)->exists();
+        }
+
+        abort_if(! $hasAccess, 403, 'Access denied.');
     }
 }

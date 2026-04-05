@@ -1,5 +1,25 @@
-# Vue 3 + Vite
+# Contentio — Frontend
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Vue 3 + Pinia + Vue Router + Tailwind v4 + Vite
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Desarrollo
+
+```bash
+# El frontend corre dentro de Docker — no necesitas Node local
+docker compose up -d
+# Accede en http://localhost:5173
+```
+
+## Tests E2E (Playwright)
+
+```bash
+npx playwright install chromium   # una sola vez
+npm run test:e2e                  # ejecutar (requiere Docker corriendo)
+npm run test:e2e:ui               # modo interactivo
+npm run test:e2e:report           # ver reporte
+```
+
+## Build de produccion
+
+Generado automaticamente via `docker/frontend/Dockerfile` durante el deploy.
+Para generar manualmente: `npm run build` → output en `dist/`
