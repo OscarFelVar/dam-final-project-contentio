@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONTENTIO — Visor / Revisor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'ABeeZee', sans-serif; }
+    .viewer-area { cursor: crosshair; }
+    .pin {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 8px rgba(74,52,42,0.25);
+    }
+    .pin span { transform: rotate(45deg); }
+    .pin-default { background: #4A342A; color: white; }
+    .pin-active { background: #7D5A44; color: white; transform: rotate(-45deg) scale(1.15); }
+    .comment-item { transition: all 0.15s ease; }
+    .comment-item:hover, .comment-item.active { background: #F5F1EA; border-radius: 8px; }
+    .tab-btn { transition: all 0.15s ease; }
+    /* Rejection modal */
+    .reject-modal { display: none; }
+    .reject-modal.open { display: flex; }
+  </style>
+</head>
+<body class="bg-[#FAF9F6] text-[#4A342A]">
+
+<!-- Top bar -->
+<header class="bg-white border-b border-[#E8E0D8] h-14 flex items-center px-6 gap-4 sticky top-0 z-10">
+  <a href="05-detalle-proyecto.html" class="flex items-center gap-2 text-[#A08A7A] hover:text-[#4A342A] transition-colors">
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <span class="text-xs">Volver al proyecto</span>
+  </a>
+
+  <div class="flex items-center gap-1.5 text-xs text-[#D7C9B8]">
+    <a href="04-lista-proyectos.html" class="hover:text-[#A08A7A]">Proyectos</a>
+    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    <a href="05-detalle-proyecto.html" class="hover:text-[#A08A7A]">Campaña Marzo</a>
+    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+    <span class="text-[#4A342A]">Reel Primavera 2026</span>
+  </div>
+
+  <div class="ml-auto">
+    <img src="./logo.png" alt="CONTENTIO" class="w-32 h-auto object-contain" onerror="this.outerHTML='<span class=\'text-[#4A342A] tracking-[0.2em] text-xs\'>CONTENTIO</span>'">
+  </div>
+</header>
+
+<!-- Main layout: viewer + panel -->
+<div class="flex" style="height: calc(100vh - 56px);">
+
+  <!-- Left: Viewer 70% -->
+  <div class="flex-1 bg-[#2A2018] flex flex-col overflow-hidden">
+
+    <!-- Viewer toolbar -->
+    <div class="flex items-center justify-between px-5 py-3 border-b border-white/8">
+      <div class="flex items-center gap-4">
+        <span class="text-xs text-white/50 tracking-wide">Vista cliente — modo revisión activo</span>
+        <div class="flex items-center gap-1.5">
+          <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
+          <span class="text-xs text-amber-400/80">Haz clic sobre el contenido para añadir un pin</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="w-7 h-7 flex items-center justify-center rounded-lg bg-white/8 text-white/60 hover:bg-white/15 hover:text-white transition-colors" title="Zoom -">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+        </button>
+        <span class="text-xs text-white/40 w-10 text-center">100%</span>
+        <button class="w-7 h-7 flex items-center justify-center rounded-lg bg-white/8 text-white/60 hover:bg-white/15 hover:text-white transition-colors" title="Zoom +">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Content area with pins -->
+    <div class="flex-1 flex items-center justify-center p-8 overflow-auto">
+      <div class="viewer-area relative inline-block" style="max-width: 100%; max-height: 100%;">
+
+        <!-- Placeholder image -->
+        <div class="bg-gradient-to-br from-[#4A342A] via-[#7D5A44] to-[#A08A7A] rounded-xl overflow-hidden"
+             style="width: 480px; height: 640px; display: flex; align-items: center; justify-content: center;">
+          <div class="text-center">
+            <svg class="w-16 h-16 text-white/20 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="0.75" d="M15 10l4.553-2.069A1 1 0 0121 8.868V15.13a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            <p class="text-white/30 text-sm tracking-wide">Reel Primavera 2026</p>
+            <p class="text-white/15 text-xs mt-1">MP4 · 1080×1920</p>
+          </div>
+        </div>
+
+        <!-- Pin 1 -->
+        <div class="pin pin-active" style="top: 22%; left: 35%; margin-left: -14px; margin-top: -28px;">
+          <span>1</span>
+        </div>
+
+        <!-- Pin 2 -->
+        <div class="pin pin-default" style="top: 55%; left: 62%; margin-left: -14px; margin-top: -28px;">
+          <span>2</span>
+        </div>
+
+        <!-- Pin 3 -->
+        <div class="pin pin-default" style="top: 75%; left: 28%; margin-left: -14px; margin-top: -28px;">
+          <span>3</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right: Panel 30% -->
+  <div class="w-96 bg-white border-l border-[#E8E0D8] flex flex-col overflow-hidden flex-shrink-0">
+
+    <!-- Panel header -->
+    <div class="px-5 py-5 border-b border-[#F0EAE2]">
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <h2 class="text-sm text-[#4A342A] tracking-wide leading-snug">Reel Primavera 2026</h2>
+        <span class="text-[11px] bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-3 py-1 flex-shrink-0">En revisión</span>
+      </div>
+      <p class="text-xs text-[#A08A7A]">Campaña Marzo 2026 · Clínica Barcelona</p>
+
+      <!-- Action buttons (CLIENTE VIEW) -->
+      <div class="flex gap-2 mt-4">
+        <button class="flex-1 flex items-center justify-center gap-1.5 bg-emerald-600 text-white rounded-lg py-2.5 text-sm hover:bg-emerald-700 transition-colors">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          Aprobar
+        </button>
+        <button onclick="document.getElementById('rejectModal').classList.add('open')" class="flex-1 flex items-center justify-center gap-1.5 bg-red-600 text-white rounded-lg py-2.5 text-sm hover:bg-red-700 transition-colors">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          Rechazar
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-[#F0EAE2] px-5">
+      <button class="tab-btn py-3 pr-5 text-xs text-[#4A342A] border-b-2 border-[#4A342A]">Comentarios (3)</button>
+      <button class="tab-btn py-3 px-5 text-xs text-[#A08A7A] border-b-2 border-transparent hover:text-[#7D5A44]">Historial</button>
+    </div>
+
+    <!-- Comments list -->
+    <div class="flex-1 overflow-y-auto px-5 py-4 space-y-1">
+
+      <!-- Comment 1 — active -->
+      <div class="comment-item active p-3 -mx-1">
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-white text-[10px] mt-0.5" style="background: #4A342A; border-radius: 50% 50% 50% 0; transform: none;">
+            <span style="font-size: 10px;">1</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-xs text-[#4A342A]">Clínica Barcelona</p>
+              <p class="text-[10px] text-[#D7C9B8]">hace 2 h</p>
+            </div>
+            <p class="text-xs text-[#7D5A44] leading-relaxed">El logo debería ser más grande y estar centrado en esta sección. Actualmente queda muy pequeño y no se aprecia bien.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comment 2 -->
+      <div class="comment-item p-3 -mx-1">
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-[#7D5A44] rounded-full flex-shrink-0 flex items-center justify-center text-white text-[10px] mt-0.5" style="border-radius: 50% 50% 50% 0;">
+            <span style="font-size: 10px;">2</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-xs text-[#4A342A]">Clínica Barcelona</p>
+              <p class="text-[10px] text-[#D7C9B8]">hace 2 h</p>
+            </div>
+            <p class="text-xs text-[#7D5A44] leading-relaxed">Los colores de esta parte no coinciden con nuestra paleta de marca. Usar el rosa #F4C2C2 como fondo.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comment 3 -->
+      <div class="comment-item p-3 -mx-1">
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-[#A08A7A] rounded-full flex-shrink-0 flex items-center justify-center text-white text-[10px] mt-0.5" style="border-radius: 50% 50% 50% 0;">
+            <span style="font-size: 10px;">3</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-1">
+              <p class="text-xs text-[#4A342A]">Clínica Barcelona</p>
+              <p class="text-[10px] text-[#D7C9B8]">hace 1 h</p>
+            </div>
+            <p class="text-xs text-[#7D5A44] leading-relaxed">El texto en esta zona está demasiado pequeño para mobile. Aumentar al menos a 16px.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- New comment form (shown after clicking viewer) -->
+    <div class="px-5 py-4 border-t border-[#F0EAE2] bg-[#FDFCFB]">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-5 h-5 bg-[#4A342A] rounded-full flex items-center justify-center text-white text-[9px]" style="border-radius: 50% 50% 50% 0;">4</div>
+        <p class="text-xs text-[#7D5A44]">Nuevo pin en posición (320, 180)</p>
+      </div>
+      <textarea placeholder="Describe tu comentario..." rows="3" class="w-full border border-[#D7C9B8] rounded-lg px-3.5 py-2.5 text-xs text-[#4A342A] placeholder-[#D7C9B8] bg-white focus:outline-none focus:border-[#4A342A] focus:ring-2 focus:ring-[#4A342A]/8 resize-none transition-all mb-3"></textarea>
+      <div class="flex items-center justify-end gap-2">
+        <button class="px-4 py-2 text-xs text-[#A08A7A] border border-[#E8E0D8] rounded-lg hover:bg-[#F5F1EA] transition-colors">Cancelar</button>
+        <button class="px-4 py-2 text-xs bg-[#4A342A] text-white rounded-lg hover:bg-[#7D5A44] transition-colors">Guardar comentario</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Rejection modal -->
+<div id="rejectModal" class="reject-modal fixed inset-0 z-30 items-center justify-center" style="background: rgba(74,52,42,0.4); backdrop-filter: blur(4px);">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+    <div class="px-7 py-5 border-b border-[#F0EAE2]">
+      <h3 class="text-base text-[#4A342A] tracking-wide">Motivo del rechazo</h3>
+      <p class="text-xs text-[#A08A7A] mt-0.5">Esta información será visible para la agencia</p>
+    </div>
+    <div class="px-7 py-6">
+      <label class="block text-xs tracking-[0.1em] uppercase text-[#7D5A44] mb-2">Descripción del motivo</label>
+      <textarea placeholder="Describe por qué rechazas este contenido..." rows="4" class="w-full border border-[#D7C9B8] rounded-lg px-4 py-3 text-sm text-[#4A342A] placeholder-[#D7C9B8] bg-white focus:outline-none focus:border-[#4A342A] resize-none"></textarea>
+    </div>
+    <div class="px-7 py-5 bg-[#FDFCFB] border-t border-[#F0EAE2] flex items-center justify-end gap-3">
+      <button onclick="document.getElementById('rejectModal').classList.remove('open')" class="px-5 py-2.5 border border-[#E8E0D8] text-[#A08A7A] rounded-lg text-sm hover:bg-white transition-colors">
+        Cancelar
+      </button>
+      <button class="px-5 py-2.5 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        Confirmar rechazo
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
