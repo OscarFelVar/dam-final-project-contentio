@@ -48,7 +48,7 @@ Route::middleware(['auth:sanctum', 'role:agency,clinic'])->group(function () {
 });
 
 // ─── Content Items (lectura: agencia y clinic; escritura: solo agencia) ───────
-Route::middleware(['auth:sanctum', 'role:agency,clinic'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:agency,clinic,admin'])->group(function () {
     Route::get('content-items',            [ContentItemController::class, 'index']);
     Route::get('content-items/{contentItem}', [ContentItemController::class, 'show']);
 });
