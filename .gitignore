@@ -1,0 +1,14 @@
+# Archivos de produccion generados en el servidor (no versionar)
+docker/nginx/current.conf
+docker/nginx/prod.conf.tmp
+backups/
+
+# Variables de entorno (nunca al repositorio)
+backend/.env
+.env
+
+# Artefactos de tests
+frontend/test-results/
+
+# Documentos binarios (Word/PDF — no aptos para git)
+docs/memoria/
