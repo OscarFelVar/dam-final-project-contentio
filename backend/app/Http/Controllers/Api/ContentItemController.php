@@ -25,7 +25,11 @@ class ContentItemController extends Controller
         $status = $request->query('status');
         $query  = ContentItem::with(['clinic', 'mediaAssets'])->latest();
 
-        if ($user->role === 'agency') {
+        if ($user->role === 'admin') {
+            if ($status) {
+                $query->where('status', $status);
+            }
+        } elseif ($user->role === 'agency') {
             $query->whereHas('clinic', fn($q) => $q->where('user_id', $user->id));
             if ($status) {
                 $query->where('status', $status);
@@ -117,6 +121,10 @@ class ContentItemController extends Controller
     private function authorizeAccess(Request $request, ContentItem $contentItem): void
     {
         $user = $request->user();
+
+        if ($user->role === 'admin') {
+            return;
+        }
 
         if ($user->role === 'agency') {
             $hasAccess = $user->clinics()->where('id', $contentItem->clinic_id)->exists();
