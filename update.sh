@@ -20,8 +20,9 @@ git -C "$DIR" pull origin main
 echo "▶ Reconstruyendo imagen PHP..."
 $COMPOSE build php
 
-# 3. Reconstruir frontend
+# 3. Reconstruir imagen frontend y ejecutarla
 echo "▶ Reconstruyendo frontend..."
+$COMPOSE build frontend-build
 $COMPOSE run --rm frontend-build
 
 # 4. Reiniciar PHP-FPM con la nueva imagen
