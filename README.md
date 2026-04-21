@@ -70,7 +70,10 @@ docker compose exec php php artisan storage:link
 
 | Email | Contraseña | Rol |
 |---|---|---|
+| `admin@contentio.com` | `password123` | admin |
 | `test@example.com` | `password123` | agency |
+| `cliente@clinica.com` | `password123` | clinic |
+| `ana@bellezavalencia.com` | `password123` | clinic |
 
 ---
 
@@ -82,7 +85,7 @@ docker compose exec php php artisan storage:link
 docker compose exec php php artisan test
 ```
 
-43 tests · 89 assertions — cubre auth, CRUD de contenidos, state machine, comentarios, anotaciones y notificaciones.
+66 tests · 145 assertions · **85.3% cobertura** — cubre auth, CRUD de contenidos, state machine, comentarios, anotaciones y notificaciones.
 
 ### E2E (Playwright)
 

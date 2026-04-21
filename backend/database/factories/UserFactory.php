@@ -43,6 +43,11 @@ class UserFactory extends Factory
         return $this->state(fn () => ['role' => 'clinic']);
     }
 
+    public function admin(): static
+    {
+        return $this->state(fn () => ['role' => 'admin']);
+    }
+
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [

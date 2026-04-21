@@ -14,7 +14,8 @@ RUN apk add --no-cache \
     zip \
     unzip \
     git \
-    curl
+    curl \
+    $PHPIZE_DEPS
 
 # Extensiones PHP requeridas por Laravel 11
 # pdo + pdo_pgsql → conexión a PostgreSQL
@@ -36,6 +37,11 @@ RUN docker-php-ext-install \
     fileinfo \
     pcntl \
     opcache
+
+# PCOV: driver de cobertura de código ligero para PHPUnit
+RUN pecl install pcov \
+    && docker-php-ext-enable pcov \
+    && apk del $PHPIZE_DEPS
 
 # Composer 2.7 copiado desde su imagen oficial (multi-stage build)
 # Así no instalamos Composer manualmente — usamos la versión oficial

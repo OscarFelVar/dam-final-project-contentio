@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONTENTIO — Lista de Proyectos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'ABeeZee', sans-serif; }
+    .sidebar { background: #4A342A; background-image: radial-gradient(circle at 1px 1px, rgba(250,249,246,0.04) 1px, transparent 0); background-size: 24px 24px; }
+    .nav-item { transition: all 0.15s ease; }
+    .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+    .nav-active { background: rgba(255,255,255,0.1); color: white; border-left: 2px solid rgba(215,201,184,0.5); }
+    .row-hover:hover { background: #FDFCFB; }
+    .tab-active { color: #4A342A; border-bottom: 2px solid #4A342A; }
+    .tab-inactive { color: #A08A7A; border-bottom: 2px solid transparent; }
+    .tab-inactive:hover { color: #7D5A44; }
+  </style>
+</head>
+<body class="bg-[#FAF9F6] text-[#4A342A]">
+<div class="flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="sidebar fixed left-0 top-0 h-screen w-64 flex flex-col z-10">
+    <div class="px-6 pt-7 pb-5">
+      <img src="./logo.png" alt="CONTENTIO" class="w-44 h-auto object-contain" onerror="this.outerHTML='<span class=\'text-white tracking-[0.2em] text-base\'>CONTENTIO</span>'">
+    </div>
+    <div class="mx-6 border-t border-white/8 mb-5"></div>
+    <nav class="flex-1 px-4 space-y-0.5">
+      <p class="px-3 mb-2 text-[10px] tracking-[0.15em] text-white/30 uppercase">Principal</p>
+      <a href="02-dashboard-agencia.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#D7C9B8] text-sm">
+        <svg class="w-4 h-4 flex-shrink-0 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Inicio
+      </a>
+      <a href="04-lista-proyectos.html" class="nav-item nav-active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        Proyectos
+      </a>
+      <a href="08-gestion-usuarios.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#D7C9B8] text-sm">
+        <svg class="w-4 h-4 flex-shrink-0 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        Usuarios
+      </a>
+    </nav>
+    <div class="px-4 pb-5 pt-4 border-t border-white/8">
+      <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/8 cursor-pointer transition-colors">
+        <div class="w-7 h-7 rounded-full bg-[#D7C9B8] flex items-center justify-center text-[#4A342A] text-xs flex-shrink-0">OF</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-white text-xs truncate">Oscar Felipe</p>
+          <p class="text-white/35 text-[10px]">Agencia</p>
+        </div>
+        <svg class="w-3.5 h-3.5 text-white/25 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"/></svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="ml-64 flex-1 p-8 lg:p-10">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <p class="text-xs tracking-[0.12em] uppercase text-[#A08A7A] mb-1">Gestión</p>
+        <h1 class="text-2xl text-[#4A342A] tracking-wide">Proyectos</h1>
+      </div>
+      <a href="06-subir-contenido.html">
+        <button class="flex items-center gap-2 bg-[#4A342A] text-white rounded-lg px-5 py-2.5 text-sm hover:bg-[#7D5A44] transition-colors">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Nuevo proyecto
+        </button>
+      </a>
+    </div>
+
+    <!-- Search + filters -->
+    <div class="bg-white border border-[#E8E0D8] rounded-xl overflow-hidden">
+
+      <!-- Toolbar -->
+      <div class="px-6 py-4 border-b border-[#F0EAE2] flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div class="relative">
+          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#D7C9B8]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" placeholder="Buscar proyecto..." value="" class="pl-10 pr-4 py-2.5 border border-[#E8E0D8] rounded-lg text-sm text-[#4A342A] placeholder-[#D7C9B8] bg-[#FDFCFB] focus:outline-none focus:border-[#4A342A] w-64">
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-1">
+          <button class="px-4 py-2 text-xs rounded-lg bg-[#4A342A] text-white">Todos</button>
+          <button class="px-4 py-2 text-xs rounded-lg text-[#A08A7A] hover:bg-[#F5F1EA] transition-colors">Activos</button>
+          <button class="px-4 py-2 text-xs rounded-lg text-[#A08A7A] hover:bg-[#F5F1EA] transition-colors">Archivados</button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-[#F5F1EA]">
+            <th class="text-left px-6 py-3.5 text-[10px] tracking-[0.12em] uppercase text-[#A08A7A] font-normal">Proyecto</th>
+            <th class="text-left px-4 py-3.5 text-[10px] tracking-[0.12em] uppercase text-[#A08A7A] font-normal hidden md:table-cell">Cliente</th>
+            <th class="text-center px-4 py-3.5 text-[10px] tracking-[0.12em] uppercase text-[#A08A7A] font-normal hidden lg:table-cell">Contenidos</th>
+            <th class="text-left px-4 py-3.5 text-[10px] tracking-[0.12em] uppercase text-[#A08A7A] font-normal">Estado</th>
+            <th class="text-left px-4 py-3.5 text-[10px] tracking-[0.12em] uppercase text-[#A08A7A] font-normal hidden xl:table-cell">Creado</th>
+            <th class="text-right px-6 py-3.5 text-[10px] tracking-[0.12em] uppercase text-[#A08A7A] font-normal">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr class="row-hover border-b border-[#F5F1EA] transition-colors">
+            <td class="px-6 py-4">
+              <a href="05-detalle-proyecto.html" class="text-sm text-[#4A342A] hover:text-[#7D5A44] transition-colors">Campaña Marzo 2026</a>
+              <p class="text-xs text-[#D7C9B8] mt-0.5">12 archivos</p>
+            </td>
+            <td class="px-4 py-4 hidden md:table-cell">
+              <p class="text-sm text-[#7D5A44]">Clínica Barcelona</p>
+            </td>
+            <td class="px-4 py-4 text-center hidden lg:table-cell">
+              <span class="text-sm text-[#4A342A]">12</span>
+            </td>
+            <td class="px-4 py-4">
+              <span class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-3 py-1">Activo</span>
+            </td>
+            <td class="px-4 py-4 hidden xl:table-cell">
+              <span class="text-xs text-[#A08A7A]">01/03/2026</span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center justify-end gap-2">
+                <a href="05-detalle-proyecto.html" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#F5F1EA] text-[#A08A7A] hover:text-[#4A342A] transition-colors" title="Ver">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </a>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#F5F1EA] text-[#D7C9B8] hover:text-[#A08A7A] transition-colors" title="Archivar">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-hover border-b border-[#F5F1EA] transition-colors">
+            <td class="px-6 py-4">
+              <a href="05-detalle-proyecto.html" class="text-sm text-[#4A342A] hover:text-[#7D5A44] transition-colors">Stories Abril</a>
+              <p class="text-xs text-[#D7C9B8] mt-0.5">5 archivos</p>
+            </td>
+            <td class="px-4 py-4 hidden md:table-cell"><p class="text-sm text-[#7D5A44]">Clínica Demo</p></td>
+            <td class="px-4 py-4 text-center hidden lg:table-cell"><span class="text-sm text-[#4A342A]">5</span></td>
+            <td class="px-4 py-4">
+              <span class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-3 py-1">Activo</span>
+            </td>
+            <td class="px-4 py-4 hidden xl:table-cell"><span class="text-xs text-[#A08A7A]">08/03/2026</span></td>
+            <td class="px-6 py-4">
+              <div class="flex items-center justify-end gap-2">
+                <a href="05-detalle-proyecto.html" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#F5F1EA] text-[#A08A7A] hover:text-[#4A342A] transition-colors">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </a>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#F5F1EA] text-[#D7C9B8] hover:text-[#A08A7A] transition-colors">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-hover border-b border-[#F5F1EA] transition-colors">
+            <td class="px-6 py-4">
+              <a href="05-detalle-proyecto.html" class="text-sm text-[#4A342A] hover:text-[#7D5A44] transition-colors">Verano 2026</a>
+              <p class="text-xs text-[#D7C9B8] mt-0.5">8 archivos</p>
+            </td>
+            <td class="px-4 py-4 hidden md:table-cell"><p class="text-sm text-[#7D5A44]">Clínica Test</p></td>
+            <td class="px-4 py-4 text-center hidden lg:table-cell"><span class="text-sm text-[#4A342A]">8</span></td>
+            <td class="px-4 py-4">
+              <span class="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-3 py-1">Activo</span>
+            </td>
+            <td class="px-4 py-4 hidden xl:table-cell"><span class="text-xs text-[#A08A7A]">10/03/2026</span></td>
+            <td class="px-6 py-4">
+              <div class="flex items-center justify-end gap-2">
+                <a href="05-detalle-proyecto.html" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#F5F1EA] text-[#A08A7A] hover:text-[#4A342A] transition-colors">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </a>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#F5F1EA] text-[#D7C9B8] hover:text-[#A08A7A] transition-colors">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="row-hover transition-colors opacity-60">
+            <td class="px-6 py-4">
+              <p class="text-sm text-[#4A342A]">Campaña Invierno 2025</p>
+              <p class="text-xs text-[#D7C9B8] mt-0.5">20 archivos</p>
+            </td>
+            <td class="px-4 py-4 hidden md:table-cell"><p class="text-sm text-[#7D5A44]">Clínica Barcelona</p></td>
+            <td class="px-4 py-4 text-center hidden lg:table-cell"><span class="text-sm text-[#4A342A]">20</span></td>
+            <td class="px-4 py-4">
+              <span class="text-[11px] bg-[#F5F1EA] text-[#A08A7A] border border-[#D7C9B8] rounded-full px-3 py-1">Archivado</span>
+            </td>
+            <td class="px-4 py-4 hidden xl:table-cell"><span class="text-xs text-[#A08A7A]">15/11/2025</span></td>
+            <td class="px-6 py-4">
+              <div class="flex items-center justify-end gap-2">
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#F5F1EA] text-[#D7C9B8] hover:text-[#A08A7A] transition-colors">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="px-6 py-4 border-t border-[#F5F1EA] flex items-center justify-between">
+        <p class="text-xs text-[#A08A7A]">4 proyectos</p>
+        <div class="flex items-center gap-1">
+          <button class="w-8 h-8 flex items-center justify-center rounded-lg text-[#D7C9B8] hover:bg-[#F5F1EA]">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#4A342A] text-white text-xs">1</button>
+          <button class="w-8 h-8 flex items-center justify-center rounded-lg text-[#A08A7A] hover:bg-[#F5F1EA] text-xs">2</button>
+          <button class="w-8 h-8 flex items-center justify-center rounded-lg text-[#D7C9B8] hover:bg-[#F5F1EA]">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>
