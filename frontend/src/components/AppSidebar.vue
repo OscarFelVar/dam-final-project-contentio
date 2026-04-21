@@ -36,7 +36,7 @@ function isActive(path) {
     <nav class="flex-1 px-4 space-y-0.5">
       <p class="px-3 mb-2 text-[10px] tracking-[0.15em] text-white/30 uppercase">Principal</p>
 
-      <!-- Usuarios (solo admin) -->
+      <!-- Administración (solo admin) -->
       <RouterLink
         v-if="auth.user?.role === 'admin'"
         to="/admin"
@@ -49,7 +49,7 @@ function isActive(path) {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
             d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
         </svg>
-        Usuarios
+        Administración
       </RouterLink>
 
       <RouterLink
