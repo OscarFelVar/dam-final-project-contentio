@@ -28,8 +28,8 @@ Route::middleware(['auth:sanctum', 'role:agency'])->group(function () {
     Route::delete('clinics/{clinic}', [ClinicController::class, 'destroy']);
 });
 
-// ─── Transiciones de estado y comentarios (agencias y clínicas) ──────────────
-Route::middleware(['auth:sanctum', 'role:agency,clinic'])->group(function () {
+// ─── Transiciones de estado y comentarios (agencias, clínicas y admin) ───────
+Route::middleware(['auth:sanctum', 'role:agency,clinic,admin'])->group(function () {
     Route::post('content-items/{contentItem}/transition', [ContentStateController::class, 'transition']);
 
     // GET    /content-items/{contentItem}/comments
