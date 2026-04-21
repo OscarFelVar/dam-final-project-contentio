@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONTENTIO — Dashboard Agencia</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'ABeeZee', sans-serif; }
+    .sidebar {
+      background: #4A342A;
+      background-image: radial-gradient(circle at 1px 1px, rgba(250,249,246,0.04) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    .nav-item { transition: all 0.15s ease; }
+    .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+    .nav-active { background: rgba(255,255,255,0.1); color: white; border-left: 2px solid rgba(215,201,184,0.5); }
+    .card-hover:hover { box-shadow: 0 4px 20px rgba(74,52,42,0.08); transform: translateY(-1px); }
+    .card-hover { transition: all 0.2s ease; }
+  </style>
+</head>
+<body class="bg-[#FAF9F6] text-[#4A342A]">
+
+<div class="flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="sidebar fixed left-0 top-0 h-screen w-64 flex flex-col z-10">
+    <!-- Logo -->
+    <div class="px-6 pt-7 pb-5">
+      <img src="./logo.png" alt="CONTENTIO" class="w-44 h-auto object-contain" onerror="this.outerHTML='<span class=\'text-white tracking-[0.2em] text-base\'>CONTENTIO</span>'">
+    </div>
+    <div class="mx-6 border-t border-white/8 mb-5"></div>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-4 space-y-0.5">
+      <p class="px-3 mb-2 text-[10px] tracking-[0.15em] text-white/30 uppercase">Principal</p>
+      <a href="02-dashboard-agencia.html" class="nav-item nav-active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Inicio
+      </a>
+      <a href="04-lista-proyectos.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#D7C9B8] text-sm">
+        <svg class="w-4 h-4 flex-shrink-0 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        Proyectos
+      </a>
+      <a href="08-gestion-usuarios.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#D7C9B8] text-sm">
+        <svg class="w-4 h-4 flex-shrink-0 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        Usuarios
+      </a>
+    </nav>
+
+    <!-- User -->
+    <div class="px-4 pb-5 pt-4 border-t border-white/8">
+      <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/8 cursor-pointer transition-colors">
+        <div class="w-7 h-7 rounded-full bg-[#D7C9B8] flex items-center justify-center text-[#4A342A] text-xs flex-shrink-0">OF</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-white text-xs truncate">Oscar Felipe</p>
+          <p class="text-white/35 text-[10px]">Agencia</p>
+        </div>
+        <svg class="w-3.5 h-3.5 text-white/25 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"/></svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="ml-64 flex-1 p-8 lg:p-10">
+
+    <!-- Top bar -->
+    <div class="flex items-center justify-between mb-10">
+      <div>
+        <p class="text-xs tracking-[0.12em] uppercase text-[#A08A7A] mb-1">Panel de control</p>
+        <h1 class="text-2xl text-[#4A342A] tracking-wide">Bienvenido, Oscar</h1>
+      </div>
+      <a href="04-lista-proyectos.html">
+        <button class="flex items-center gap-2 bg-[#4A342A] text-white rounded-lg px-5 py-2.5 text-sm hover:bg-[#7D5A44] transition-colors">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Nuevo proyecto
+        </button>
+      </a>
+    </div>
+
+    <!-- Metric cards -->
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
+
+      <div class="card-hover bg-white border border-[#E8E0D8] rounded-xl p-6">
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-9 h-9 bg-[#F5F1EA] rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-[#7D5A44]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+          </div>
+          <span class="text-xs text-[#A08A7A]">Total</span>
+        </div>
+        <p class="text-3xl text-[#4A342A] mb-1">12</p>
+        <p class="text-xs text-[#A08A7A] tracking-wide">Proyectos activos</p>
+      </div>
+
+      <div class="card-hover bg-white border border-[#E8E0D8] rounded-xl p-6">
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <span class="text-xs text-[#A08A7A]">Acción</span>
+        </div>
+        <p class="text-3xl text-[#4A342A] mb-1">5</p>
+        <p class="text-xs text-[#A08A7A] tracking-wide">Pendientes de revisión</p>
+      </div>
+
+      <div class="card-hover bg-white border border-[#E8E0D8] rounded-xl p-6">
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-9 h-9 bg-emerald-50 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <span class="text-xs text-[#A08A7A]">Este mes</span>
+        </div>
+        <p class="text-3xl text-emerald-600 mb-1">28</p>
+        <p class="text-xs text-[#A08A7A] tracking-wide">Aprobados</p>
+      </div>
+
+      <div class="card-hover bg-white border border-[#E8E0D8] rounded-xl p-6">
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <span class="text-xs text-[#A08A7A]">Este mes</span>
+        </div>
+        <p class="text-3xl text-red-500 mb-1">3</p>
+        <p class="text-xs text-[#A08A7A] tracking-wide">Rechazados</p>
+      </div>
+
+    </div>
+
+    <!-- Bottom grid: activity + pending -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+      <!-- Recent activity -->
+      <div class="xl:col-span-2 bg-white border border-[#E8E0D8] rounded-xl">
+        <div class="px-6 py-5 border-b border-[#F0EAE2] flex items-center justify-between">
+          <h2 class="text-sm tracking-wide text-[#4A342A]">Actividad reciente</h2>
+          <span class="text-xs text-[#A08A7A]">Hoy</span>
+        </div>
+        <div class="divide-y divide-[#F5F1EA]">
+
+          <div class="px-6 py-4 flex items-start gap-4">
+            <div class="w-2 h-2 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-[#4A342A]">Clínica Barcelona <span class="text-[#A08A7A]">aprobó</span> Reel Primavera 2026</p>
+              <p class="text-xs text-[#D7C9B8] mt-0.5">Proyecto: Campaña Marzo · hace 23 min</p>
+            </div>
+          </div>
+
+          <div class="px-6 py-4 flex items-start gap-4">
+            <div class="w-2 h-2 rounded-full bg-amber-400 mt-1.5 flex-shrink-0"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-[#4A342A]">Clínica Demo <span class="text-[#A08A7A]">añadió comentarios en</span> Story Oferta</p>
+              <p class="text-xs text-[#D7C9B8] mt-0.5">Proyecto: Stories Abril · hace 1 h</p>
+            </div>
+          </div>
+
+          <div class="px-6 py-4 flex items-start gap-4">
+            <div class="w-2 h-2 rounded-full bg-red-400 mt-1.5 flex-shrink-0"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-[#4A342A]">Clínica Barcelona <span class="text-[#A08A7A]">rechazó</span> Post Tratamiento Facial</p>
+              <p class="text-xs text-[#D7C9B8] mt-0.5">Proyecto: Campaña Marzo · hace 3 h</p>
+            </div>
+          </div>
+
+          <div class="px-6 py-4 flex items-start gap-4">
+            <div class="w-2 h-2 rounded-full bg-[#D7C9B8] mt-1.5 flex-shrink-0"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-[#4A342A]">Subiste <span class="text-[#A08A7A]">3 nuevos contenidos</span> a Stories Abril</p>
+              <p class="text-xs text-[#D7C9B8] mt-0.5">hace 5 h</p>
+            </div>
+          </div>
+
+          <div class="px-6 py-4 flex items-start gap-4">
+            <div class="w-2 h-2 rounded-full bg-[#D7C9B8] mt-1.5 flex-shrink-0"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-[#4A342A]">Clínica Test <span class="text-[#A08A7A]">revisó</span> Reel Verano</p>
+              <p class="text-xs text-[#D7C9B8] mt-0.5">Proyecto: Verano 2026 · ayer</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Pending -->
+      <div class="bg-white border border-[#E8E0D8] rounded-xl">
+        <div class="px-6 py-5 border-b border-[#F0EAE2]">
+          <h2 class="text-sm tracking-wide text-[#4A342A]">Esperando revisión</h2>
+          <p class="text-xs text-[#A08A7A] mt-0.5">5 contenidos enviados</p>
+        </div>
+        <div class="divide-y divide-[#F5F1EA]">
+
+          <a href="05-detalle-proyecto.html" class="flex items-center gap-3 px-6 py-3.5 hover:bg-[#FDFCFB] transition-colors group">
+            <div class="w-8 h-8 bg-[#F5F1EA] rounded-lg flex-shrink-0 flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-[#A08A7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.069A1 1 0 0121 8.868V15.13a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-[#4A342A] truncate">Reel Primavera #2</p>
+              <p class="text-[10px] text-[#D7C9B8]">Barcelona · 2 días</p>
+            </div>
+          </a>
+
+          <a href="05-detalle-proyecto.html" class="flex items-center gap-3 px-6 py-3.5 hover:bg-[#FDFCFB] transition-colors group">
+            <div class="w-8 h-8 bg-[#F5F1EA] rounded-lg flex-shrink-0 flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-[#A08A7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-[#4A342A] truncate">Post Botox Verano</p>
+              <p class="text-[10px] text-[#D7C9B8]">Demo · 1 día</p>
+            </div>
+          </a>
+
+          <a href="05-detalle-proyecto.html" class="flex items-center gap-3 px-6 py-3.5 hover:bg-[#FDFCFB] transition-colors group">
+            <div class="w-8 h-8 bg-[#F5F1EA] rounded-lg flex-shrink-0 flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-[#A08A7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-[#4A342A] truncate">Story Oferta Flash</p>
+              <p class="text-[10px] text-amber-500">Test · 5 días ⚠</p>
+            </div>
+          </a>
+
+        </div>
+        <div class="px-6 py-4 border-t border-[#F0EAE2]">
+          <a href="04-lista-proyectos.html" class="text-xs text-[#7D5A44] hover:text-[#4A342A] tracking-wide transition-colors">Ver todos los proyectos →</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

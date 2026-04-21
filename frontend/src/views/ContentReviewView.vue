@@ -13,6 +13,8 @@ const router = useRouter()
 const auth   = useAuthStore()
 const store  = useContentStore()
 
+const storageBase = (import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api').replace('/api', '')
+
 const item     = ref(null)
 const comments = ref([])
 const loading  = ref(true)
@@ -143,7 +145,7 @@ function isVideo(asset) {
 }
 
 function assetUrl(asset) {
-  return `http://localhost:8080/storage/${asset.file_path}`
+  return `${storageBase}/storage/${asset.file_path}`
 }
 
 function formatDate(d) {

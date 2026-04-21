@@ -12,6 +12,8 @@ const props = defineProps({
 const auth  = useAuthStore()
 const store = useContentStore()
 
+const storageBase = (import.meta.env.VITE_API_URL ?? 'http://localhost:8080/api').replace('/api', '')
+
 const annotations = ref([])
 const loading     = ref(true)
 
@@ -97,7 +99,7 @@ function closePinDetail(e) {
     <!-- Imagen con cursor crosshair si se puede anotar -->
     <img
       ref="imageRef"
-      :src="`http://localhost:8080/storage/${asset.file_path}`"
+      :src="`${storageBase}/storage/${asset.file_path}`"
       :alt="asset.file_name"
       :class="['w-full object-contain max-h-[500px] bg-[#F5F1EA]', !readonly ? 'cursor-crosshair' : '']"
       @click="handleImageClick"
