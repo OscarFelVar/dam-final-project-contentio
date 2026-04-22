@@ -114,8 +114,8 @@ function formatDate(d) {
         Cargando...
       </div>
 
-      <div class="overflow-x-auto">
-      <table v-else class="w-full text-sm">
+      <div v-else class="overflow-x-auto">
+      <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-[#E8E0D8]">
             <th class="text-left px-6 py-3 text-xs tracking-[0.1em] uppercase text-[#A08A7A] font-normal">Nombre</th>
