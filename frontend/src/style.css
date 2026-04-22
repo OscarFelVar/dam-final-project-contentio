@@ -21,11 +21,14 @@ body {
   border: 1px solid #D7C9B8;
   border-radius: 0.5rem;
   padding: 0.625rem 1rem;
-  font-size: 0.875rem;
+  font-size: 1rem; /* ≥16px previene auto-zoom en iOS Safari */
   color: #4A342A;
   background: white;
   width: 100%;
   transition: border-color 0.15s, box-shadow 0.15s;
+}
+@media (min-width: 768px) {
+  .input-contentio { font-size: 0.875rem; }
 }
 .input-contentio:focus {
   outline: none;
