@@ -2,6 +2,9 @@
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
+defineProps({ isOpen: Boolean })
+const emit = defineEmits(['close'])
+
 const auth   = useAuthStore()
 const router = useRouter()
 const route  = useRoute()
@@ -20,7 +23,8 @@ function isActive(path) {
 
 <template>
   <aside
-    class="sidebar-bg fixed left-0 top-0 h-screen w-64 flex flex-col z-10 select-none"
+    class="sidebar-bg fixed left-0 top-0 h-screen w-64 flex flex-col z-10 select-none transition-transform duration-300 md:translate-x-0"
+    :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
   >
     <!-- Logo -->
     <div class="px-6 pt-7 pb-5">
@@ -44,6 +48,7 @@ function isActive(path) {
         :class="isActive('/admin')
           ? 'bg-white/10 text-white border-l-2 border-white/40'
           : 'text-[#D7C9B8] hover:bg-white/8 hover:text-white'"
+        @click="emit('close')"
       >
         <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -58,6 +63,7 @@ function isActive(path) {
         :class="isActive('/dashboard')
           ? 'bg-white/10 text-white border-l-2 border-white/40'
           : 'text-[#D7C9B8] hover:bg-white/8 hover:text-white'"
+        @click="emit('close')"
       >
         <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -72,6 +78,7 @@ function isActive(path) {
         :class="isActive('/content-items')
           ? 'bg-white/10 text-white border-l-2 border-white/40'
           : 'text-[#D7C9B8] hover:bg-white/8 hover:text-white'"
+        @click="emit('close')"
       >
         <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -87,6 +94,7 @@ function isActive(path) {
         :class="isActive('/clinics')
           ? 'bg-white/10 text-white border-l-2 border-white/40'
           : 'text-[#D7C9B8] hover:bg-white/8 hover:text-white'"
+        @click="emit('close')"
       >
         <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
