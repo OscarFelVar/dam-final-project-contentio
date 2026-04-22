@@ -118,11 +118,11 @@ function formatDate(d) {
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-[#E8E0D8]">
-            <th class="text-left px-6 py-3 text-xs tracking-[0.1em] uppercase text-[#A08A7A] font-normal">Nombre</th>
-            <th class="text-left px-6 py-3 text-xs tracking-[0.1em] uppercase text-[#A08A7A] font-normal">Email</th>
-            <th class="text-left px-6 py-3 text-xs tracking-[0.1em] uppercase text-[#A08A7A] font-normal">Rol</th>
-            <th class="text-left px-6 py-3 text-xs tracking-[0.1em] uppercase text-[#A08A7A] font-normal">Alta</th>
-            <th class="px-6 py-3"></th>
+            <th class="text-left px-3 md:px-6 py-3 text-xs tracking-[0.1em] uppercase text-[#A08A7A] font-normal">Nombre</th>
+            <th class="text-left px-3 md:px-6 py-3 text-xs tracking-[0.1em] uppercase text-[#A08A7A] font-normal">Email</th>
+            <th class="text-left px-3 md:px-6 py-3 text-xs tracking-[0.1em] uppercase text-[#A08A7A] font-normal">Rol</th>
+            <th class="hidden sm:table-cell text-left px-3 md:px-6 py-3 text-xs tracking-[0.1em] uppercase text-[#A08A7A] font-normal">Alta</th>
+            <th class="px-3 md:px-6 py-3"></th>
           </tr>
         </thead>
         <tbody>
@@ -131,15 +131,15 @@ function formatDate(d) {
             :key="user.id"
             class="border-b border-[#F5F1EA] last:border-0"
           >
-            <td class="px-6 py-3 text-[#4A342A]">{{ user.name }}</td>
-            <td class="px-6 py-3 text-[#A08A7A]">{{ user.email }}</td>
-            <td class="px-6 py-3">
-              <span :class="['text-[10px] border rounded-full px-2.5 py-1', roleBadgeClass(user.role)]">
+            <td class="px-3 md:px-6 py-3 text-[#4A342A] text-xs md:text-sm">{{ user.name }}</td>
+            <td class="px-3 md:px-6 py-3 text-[#A08A7A] text-xs truncate max-w-[120px] md:max-w-none">{{ user.email }}</td>
+            <td class="px-3 md:px-6 py-3">
+              <span :class="['text-[10px] border rounded-full px-2 py-0.5', roleBadgeClass(user.role)]">
                 {{ roleLabel(user.role) }}
               </span>
             </td>
-            <td class="px-6 py-3 text-[#A08A7A] text-xs">{{ formatDate(user.created_at) }}</td>
-            <td class="px-6 py-3 text-right">
+            <td class="hidden sm:table-cell px-3 md:px-6 py-3 text-[#A08A7A] text-xs">{{ formatDate(user.created_at) }}</td>
+            <td class="px-3 md:px-6 py-3 text-right">
               <button
                 v-if="user.role !== 'admin'"
                 @click="handleDelete(user)"
