@@ -87,8 +87,8 @@ function formatDate(d) {
   <AppLayout>
 
     <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-      <div>
+    <div class="flex items-center justify-between gap-3 flex-wrap mb-8">
+      <div class="min-w-0">
         <p class="text-xs tracking-[0.12em] uppercase text-[#A08A7A] mb-1">Gestión</p>
         <h1 class="text-2xl text-[#4A342A] tracking-wide">Contenidos</h1>
       </div>
@@ -147,7 +147,7 @@ function formatDate(d) {
     </div>
 
     <!-- Content grid -->
-    <div v-else class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <RouterLink
         v-for="(item, idx) in store.items"
         :key="item.id"

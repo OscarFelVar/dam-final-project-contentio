@@ -110,8 +110,8 @@ async function handleRemoveUser(user) {
   <AppLayout>
 
     <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-      <div>
+    <div class="flex items-center justify-between gap-3 flex-wrap mb-8">
+      <div class="min-w-0">
         <p class="text-xs tracking-[0.12em] uppercase text-[#A08A7A] mb-1">Gestión</p>
         <h1 class="text-2xl text-[#4A342A] tracking-wide">Clínicas</h1>
       </div>

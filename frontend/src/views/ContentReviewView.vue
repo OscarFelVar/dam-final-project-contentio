@@ -166,8 +166,8 @@ function formatDate(d) {
     <template v-else-if="item">
 
       <!-- Header -->
-      <div class="flex items-start justify-between mb-8 gap-4">
-        <div>
+      <div class="flex items-start justify-between mb-8 gap-4 flex-wrap">
+        <div class="min-w-0">
           <button @click="router.back()" class="text-xs text-[#A08A7A] hover:text-[#4A342A] mb-2 flex items-center gap-1">
             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
