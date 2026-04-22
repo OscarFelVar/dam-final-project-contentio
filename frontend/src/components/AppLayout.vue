@@ -16,7 +16,7 @@ const sidebarOpen = ref(false)
 
     <AppSidebar :is-open="sidebarOpen" @close="sidebarOpen = false" />
 
-    <main class="flex-1 md:ml-64 p-5 md:p-8 lg:p-10 min-h-screen">
+    <main class="flex-1 min-w-0 md:ml-64 p-5 md:p-8 lg:p-10 min-h-screen overflow-x-hidden">
       <!-- Botón hamburguesa solo en móvil -->
       <button
         class="mb-4 md:hidden p-1.5 rounded-lg text-[#4A342A] hover:bg-[#4A342A]/10 transition-colors"
