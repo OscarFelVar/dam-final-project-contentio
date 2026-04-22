@@ -128,7 +128,7 @@ const typeOptions = [
           <label class="block text-xs tracking-[0.1em] uppercase text-[#7D5A44] mb-3">
             Tipo de contenido
           </label>
-          <div class="grid grid-cols-3 gap-3">
+          <div class="grid grid-cols-3 gap-2 sm:gap-3">
             <button
               v-for="t in typeOptions"
               :key="t.value"
