@@ -58,8 +58,8 @@ function formatDate(d) {
   <AppLayout>
 
     <!-- Top bar -->
-    <div class="flex items-center justify-between mb-10">
-      <div>
+    <div class="flex items-center justify-between gap-3 flex-wrap mb-10">
+      <div class="min-w-0">
         <p class="text-xs tracking-[0.12em] uppercase text-[#A08A7A] mb-1">Panel de control</p>
         <h1 class="text-2xl text-[#4A342A] tracking-wide">
           Bienvenido, {{ auth.user?.name?.split(' ')[0] }}
@@ -105,7 +105,7 @@ function formatDate(d) {
     </div>
 
     <!-- Metric cards -->
-    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
 
       <div class="card-lift bg-white border border-[#E8E0D8] rounded-xl p-6">
         <div class="flex items-start justify-between mb-4">
