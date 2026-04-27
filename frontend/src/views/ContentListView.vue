@@ -198,8 +198,12 @@ function formatDate(d) {
           <p class="text-xs text-[#4A342A] truncate mb-1">{{ item.title }}</p>
           <div class="flex items-center justify-between">
             <p class="text-[10px] text-[#D7C9B8] truncate">{{ item.clinic?.name }}</p>
-            <p v-if="item.created_at" class="text-[10px] text-[#D7C9B8] flex-shrink-0 ml-2">
-              {{ formatDate(item.created_at) }}
+            <p v-if="item.deadline_at" class="text-[10px] text-[#A08A7A] flex-shrink-0 ml-2 flex items-center gap-1">
+              <svg class="w-2.5 h-2.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              {{ formatDate(item.deadline_at) }}
             </p>
           </div>
         </div>

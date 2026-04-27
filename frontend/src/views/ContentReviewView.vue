@@ -176,7 +176,16 @@ function formatDate(d) {
           </button>
           <p class="text-xs tracking-[0.12em] uppercase text-[#A08A7A] mb-1">Revisión</p>
           <h1 class="text-2xl text-[#4A342A] tracking-wide">{{ item.title }}</h1>
-          <p class="text-xs text-[#A08A7A] mt-1">{{ item.clinic?.name }}</p>
+          <div class="flex items-center gap-3 mt-1 flex-wrap">
+            <p class="text-xs text-[#A08A7A]">{{ item.clinic?.name }}</p>
+            <span v-if="item.deadline_at" class="text-xs text-[#A08A7A] flex items-center gap-1">
+              <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              Vence {{ formatDate(item.deadline_at) }}
+            </span>
+          </div>
         </div>
 
         <!-- Estado + acciones -->
