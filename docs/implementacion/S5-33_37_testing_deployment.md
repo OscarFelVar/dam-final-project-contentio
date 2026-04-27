@@ -194,6 +194,105 @@ Estos puntos se atacaran antes del cierre del proyecto.
 
 ---
 
+## Correcciones y mejoras post-despliegue (27/04/2026)
+
+Durante las pruebas reales con usuarios en produccion se detectaron y resolvieron tres problemas.
+
+### [S5-16] — Fix 500 en transicion de estado
+
+**Problema:** Al cambiar el estado de un contenido (ej. enviar a revision), la API devolvía un error 500 en lugar de confirmar el cambio.
+
+**Causa raiz:** La transicion se guardaba correctamente en la base de datos, pero a continuacion el sistema intentaba enviar una notificacion por email via SMTP (`smtp.gmail.com:587`). OVH bloquea los puertos SMTP salientes (25, 465, 587) en sus VPS, lo que provocaba un timeout de 60 segundos y una excepcion no capturada que interrumpía la respuesta HTTP.
+
+**Solucion:** Envolver la llamada a `notifyStatusChange()` en un bloque `try/catch` en `ContentStateController`. Si el envío de email falla, se registra un aviso en el log pero la transicion se completa correctamente y el cliente recibe una respuesta 200.
+
+```php
+// ContentStateController.php
+try {
+    $this->notifyStatusChange($contentItem, $fromStatus, $toStatus);
+} catch (\Exception $e) {
+    \Log::warning('Email notification failed after transition', [
+        'content_item_id' => $contentItem->id,
+        'error'           => $e->getMessage(),
+    ]);
+}
+```
+
+**Leccion:** En sistemas que envian emails en respuesta a acciones de usuario, el envio nunca debe bloquear la respuesta HTTP. La solucion correcta a largo plazo es usar una cola de trabajos (`php artisan queue:work`) para enviar el email de forma asincrona.
+
+---
+
+### [S5-17] — Integracion de Resend como proveedor de email
+
+**Problema:** OVH bloquea los puertos SMTP salientes, por lo que cualquier configuracion SMTP convencional (Gmail, Mailgun SMTP) falla con timeout.
+
+**Solucion:** Sustituir el driver SMTP por **Resend**, un servicio de email transaccional que expone una API HTTP (puerto 443, nunca bloqueado). Laravel integra Resend nativamente a traves del paquete oficial.
+
+**Instalacion:**
+
+```bash
+composer require resend/resend-laravel
+```
+
+**Configuracion del dominio en Resend:**
+
+Para enviar desde `noreply@contentio.tech` se requiere verificar la propiedad del dominio añadiendo registros DNS en OVH:
+
+| Tipo | Nombre | Proposito |
+|---|---|---|
+| TXT | `resend._domainkey` | Firma DKIM — autentica el origen del email |
+| MX | `send` | Registro de rebote para Amazon SES (infraestructura de Resend) |
+| TXT | `send` | Registro SPF — autoriza el envio desde AWS |
+| TXT | `_dmarc` | Politica DMARC — indica a los receptores como tratar emails no autenticados |
+
+**Variables de entorno en produccion (`.env`):**
+
+```env
+MAIL_MAILER=resend
+RESEND_API_KEY=re_xxxxxxxxxxxx
+MAIL_FROM_ADDRESS=noreply@contentio.tech
+MAIL_FROM_NAME="Contentio"
+```
+
+**Resultado:** Los emails de notificacion (cambios de estado del contenido) llegan correctamente a las bandejas Gmail de los usuarios de clinica y agencia. No es necesario tener un buzon de entrada en `@contentio.tech` — el dominio solo se usa como remitente.
+
+**Diferencia clave SMTP vs API HTTP:**
+
+| | SMTP | Resend HTTP |
+|---|---|---|
+| Puerto | 465 / 587 (bloqueado por OVH) | 443 (HTTPS, siempre abierto) |
+| Autenticacion | Usuario + contrasena | API Key en cabecera HTTP |
+| Integracion Laravel | Driver `smtp` | Driver `resend` (paquete oficial) |
+
+---
+
+### [S5-18] — Mostrar fecha de vencimiento en listado y visor
+
+**Problema:** El campo `deadline_at` se definía al crear el contenido pero no se mostraba en ninguna vista del frontend.
+
+**Cambios realizados:**
+
+- **`ContentReviewView.vue`** — se añade la fecha de vencimiento en el encabezado, junto al nombre de la clinica, con un icono de calendario. Solo visible si el campo tiene valor.
+
+- **`ContentListView.vue`** — en la parte inferior de cada tarjeta se muestra la fecha de vencimiento (sustituyendo `created_at`, menos relevante para el usuario). Solo visible si el campo tiene valor.
+
+En ambos casos se reutiliza la funcion `formatDate()` ya existente, que formatea la fecha en locale `es-ES` con dia, mes, año, hora y minuto.
+
+---
+
+### Mejora: `update.sh` incluye `composer install`
+
+El script de actualizacion en produccion no ejecutaba `composer install` tras el `git pull`, lo que impedía que nuevos paquetes PHP se instalaran automaticamente al desplegar. Se añadio el paso correspondiente:
+
+```bash
+# Instalar dependencias PHP (por si hay paquetes nuevos en composer.json)
+$COMPOSE run --rm --no-deps php composer install --no-dev --optimize-autoloader --no-interaction
+```
+
+Esto garantiza que cualquier paquete añadido al `composer.json` en el repositorio queda disponible tras ejecutar `bash update.sh`, sin intervención manual en el servidor.
+
+---
+
 ## Estructura de archivos creados/modificados
 
 ```
