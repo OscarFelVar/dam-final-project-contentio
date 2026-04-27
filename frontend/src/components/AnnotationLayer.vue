@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useContentStore } from '../stores/content'
 
@@ -25,7 +25,28 @@ const saving      = ref(false)
 // Pin seleccionado para ver detalle
 const activePin   = ref(null)
 
-const imageRef = ref(null)
+const imageRef    = ref(null)
+// Bounds del contenido real de imagen dentro del elemento <img> (px)
+// Con object-contain puede haber barras vacías → estos bounds excluyen esas barras
+const contentBounds = ref({ left: 0, top: 0, width: 0, height: 0 })
+
+function calcContentBounds() {
+  const img = imageRef.value
+  if (!img || !img.naturalWidth || !img.naturalHeight) return
+  const elW = img.clientWidth
+  const elH = img.clientHeight
+  const natRatio = img.naturalWidth / img.naturalHeight
+  const elRatio  = elW / elH
+  let cW, cH, cL, cT
+  if (natRatio >= elRatio) {
+    // imagen más ancha → ajusta por ancho, letterbox arriba/abajo
+    cW = elW; cH = elW / natRatio; cL = 0; cT = (elH - cH) / 2
+  } else {
+    // imagen más alta → ajusta por alto, letterbox izquierda/derecha
+    cH = elH; cW = elH * natRatio; cL = (elW - cW) / 2; cT = 0
+  }
+  contentBounds.value = { left: cL, top: cT, width: cW, height: cH }
+}
 
 onMounted(async () => {
   if (props.initialAnnotations !== null) {
@@ -35,21 +56,51 @@ onMounted(async () => {
     annotations.value = await store.fetchAnnotations(props.asset.id)
     loading.value = false
   }
+  // Calcular bounds cuando la imagen cargue (o ya está cargada si está en caché)
+  const img = imageRef.value
+  if (img?.complete && img.naturalWidth) {
+    calcContentBounds()
+  } else {
+    img?.addEventListener('load', calcContentBounds)
+  }
+  window.addEventListener('resize', calcContentBounds)
 })
+
+onUnmounted(() => {
+  window.removeEventListener('resize', calcContentBounds)
+})
+
+// Convierte % de imagen → % de elemento (para posicionar el pin en el DOM)
+function toElementPct(xPct, yPct) {
+  const { left: cL, top: cT, width: cW, height: cH } = contentBounds.value
+  const img = imageRef.value
+  if (!img || !cW || !cH) return { left: xPct + '%', top: yPct + '%' }
+  return {
+    left: ((cL + (xPct / 100) * cW) / img.clientWidth  * 100).toFixed(2) + '%',
+    top:  ((cT + (yPct / 100) * cH) / img.clientHeight * 100).toFixed(2) + '%',
+  }
+}
 
 // Click sobre la imagen → crear pin en esa posición
 function handleImageClick(e) {
   if (props.readonly) return
-
-  // Cerrar cualquier pin activo o pendiente
   activePin.value  = null
   pendingPin.value = null
 
   const rect = imageRef.value.getBoundingClientRect()
-  const x = ((e.clientX - rect.left) / rect.width)  * 100
-  const y = ((e.clientY - rect.top)  / rect.height) * 100
+  const { left: cL, top: cT, width: cW, height: cH } = contentBounds.value
 
-  pendingPin.value = { x: parseFloat(x.toFixed(2)), y: parseFloat(y.toFixed(2)) }
+  // Coordenadas del click relativas al contenido real de la imagen
+  const clickX = e.clientX - rect.left - cL
+  const clickY = e.clientY - rect.top  - cT
+
+  // Ignorar clicks en las barras vacías (fuera del contenido)
+  if (clickX < 0 || clickX > cW || clickY < 0 || clickY > cH) return
+
+  pendingPin.value = {
+    x: parseFloat(((clickX / cW) * 100).toFixed(2)),
+    y: parseFloat(((clickY / cH) * 100).toFixed(2)),
+  }
   pinComment.value = ''
 }
 
@@ -116,7 +167,7 @@ function closePinDetail(e) {
       <div
         v-for="pin in annotations"
         :key="pin.id"
-        :style="{ left: pin.x_position + '%', top: pin.y_position + '%' }"
+        :style="toElementPct(pin.x_position, pin.y_position)"
         class="absolute -translate-x-1/2 -translate-y-1/2"
         @click="selectPin(pin, $event)"
       >
@@ -165,7 +216,7 @@ function closePinDetail(e) {
     <!-- Pin pendiente (posición donde se hizo click) -->
     <div
       v-if="pendingPin"
-      :style="{ left: pendingPin.x + '%', top: pendingPin.y + '%' }"
+      :style="toElementPct(pendingPin.x, pendingPin.y)"
       class="absolute -translate-x-1/2 -translate-y-1/2 z-20"
       @click.stop
     >
