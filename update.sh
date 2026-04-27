@@ -25,22 +25,26 @@ echo "▶ Reconstruyendo frontend..."
 $COMPOSE build frontend-build
 $COMPOSE run --rm frontend-build
 
-# 4. Reiniciar PHP-FPM con la nueva imagen
+# 4. Instalar dependencias PHP (por si hay paquetes nuevos en composer.json)
+echo "▶ Instalando dependencias PHP..."
+$COMPOSE run --rm --no-deps php composer install --no-dev --optimize-autoloader --no-interaction
+
+# 5. Reiniciar PHP-FPM con la nueva imagen
 echo "▶ Reiniciando PHP-FPM..."
 $COMPOSE up -d --no-deps php
 
-# 5. Ejecutar migraciones pendientes
+# 6. Ejecutar migraciones pendientes
 echo "▶ Ejecutando migraciones..."
 $COMPOSE exec php php artisan migrate --force
 
-# 6. Limpiar y regenerar caches de Laravel
+# 7. Limpiar y regenerar caches de Laravel
 echo "▶ Regenerando caches..."
 $COMPOSE exec php php artisan config:cache
 $COMPOSE exec php php artisan route:cache
 $COMPOSE exec php php artisan event:cache
 $COMPOSE exec php php artisan view:cache
 
-# 7. Recargar Nginx para servir el nuevo frontend
+# 8. Recargar Nginx para servir el nuevo frontend
 echo "▶ Recargando Nginx..."
 $COMPOSE exec nginx nginx -s reload
 
