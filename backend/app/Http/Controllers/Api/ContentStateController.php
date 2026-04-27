@@ -63,8 +63,15 @@ class ContentStateController extends Controller
             ]);
         });
 
-        // Enviar notificación por email al destinatario correspondiente
-        $this->notifyStatusChange($contentItem, $fromStatus, $toStatus);
+        // Enviar notificación por email (no bloquea la respuesta si falla)
+        try {
+            $this->notifyStatusChange($contentItem, $fromStatus, $toStatus);
+        } catch (\Exception $e) {
+            \Log::warning('Email notification failed after transition', [
+                'content_item_id' => $contentItem->id,
+                'error'           => $e->getMessage(),
+            ]);
+        }
 
         return response()->json($contentItem->fresh()->load(['clinic', 'mediaAssets', 'stateHistories.user']));
     }
