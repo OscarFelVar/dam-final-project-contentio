@@ -142,6 +142,28 @@ async function removePin(pin, e) {
 function closePinDetail(e) {
   if (e.target === e.currentTarget) activePin.value = null
 }
+
+// Posiciona el popover evitando que se recorte en los bordes
+// xPct, yPct son % del contenido real de la imagen (0-100)
+function popoverStyle(xPct, yPct) {
+  const vertical = yPct > 45
+    ? { bottom: '100%', top: 'auto', marginBottom: '8px', marginTop: '0' }
+    : { top: '100%', bottom: 'auto', marginTop: '8px', marginBottom: '0' }
+
+  let horizontal
+  if (xPct < 20) {
+    // Borde izquierdo: alinear borde izquierdo del popover con el pin
+    horizontal = { left: '-12px', right: 'auto', transform: 'none' }
+  } else if (xPct > 78) {
+    // Borde derecho: alinear borde derecho del popover con el pin
+    horizontal = { right: '-12px', left: 'auto', transform: 'none' }
+  } else {
+    // Centro: centrar bajo/sobre el pin
+    horizontal = { left: '50%', right: 'auto', transform: 'translateX(-50%)' }
+  }
+
+  return { ...vertical, ...horizontal }
+}
 </script>
 
 <template>
@@ -185,15 +207,7 @@ function closePinDetail(e) {
         <div
           v-if="activePin?.id === pin.id"
           class="absolute z-20 w-52 bg-white border border-[#E8E0D8] rounded-xl shadow-lg p-3"
-          :style="{
-            top:       pin.y_position > 55 ? 'auto' : '100%',
-            bottom:    pin.y_position > 55 ? '100%' : 'auto',
-            left:      pin.x_position > 60 ? 'auto' : '50%',
-            right:     pin.x_position > 60 ? '50%'  : 'auto',
-            transform: pin.x_position > 60 ? 'none'  : 'translateX(-50%)',
-            marginTop:    pin.y_position > 55 ? '0'    : '8px',
-            marginBottom: pin.y_position > 55 ? '8px'  : '0',
-          }"
+          :style="popoverStyle(pin.x_position, pin.y_position)"
           @click.stop
         >
           <div class="flex items-start justify-between gap-2 mb-1">
@@ -227,15 +241,7 @@ function closePinDetail(e) {
 
       <!-- Formulario -->
       <div class="absolute z-30 w-56 bg-white border border-[#E8E0D8] rounded-xl shadow-lg p-3"
-        :style="{
-          top:       pendingPin.y > 55 ? 'auto' : '100%',
-          bottom:    pendingPin.y > 55 ? '100%' : 'auto',
-          left:      pendingPin.x > 60 ? 'auto' : '50%',
-          right:     pendingPin.x > 60 ? '50%'  : 'auto',
-          transform: pendingPin.x > 60 ? 'none'  : 'translateX(-50%)',
-          marginTop:    pendingPin.y > 55 ? '0'   : '8px',
-          marginBottom: pendingPin.y > 55 ? '8px' : '0',
-        }">
+        :style="popoverStyle(pendingPin.x, pendingPin.y)">
         <p class="text-[10px] text-[#A08A7A] mb-2">Nuevo pin</p>
         <textarea
           v-model="pinComment"
