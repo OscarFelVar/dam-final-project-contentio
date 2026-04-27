@@ -12,13 +12,14 @@ const store  = useContentStore()
 const isEdit = computed(() => route.params.id !== 'new' && !!route.params.id)
 
 const form = ref({ title: '', type: '', clinic_id: '', deadline_at: '' })
-const clinics      = ref([])
-const selectedFile = ref(null)
-const fileInput    = ref(null)
-const submitting   = ref(false)
-const error        = ref(null)
-const isDragging   = ref(false)
-const createdItem  = ref(null)  // evita duplicados si falla el upload
+const clinics       = ref([])
+const selectedFiles = ref([])
+const fileInput     = ref(null)
+const submitting    = ref(false)
+const uploadProgress = ref('')   // "Subiendo 2/3..."
+const error         = ref(null)
+const isDragging    = ref(false)
+const createdItem   = ref(null)  // evita duplicados si falla el upload
 
 const currentItem = computed(() => store.items.find(i => i.id === Number(route.params.id)))
 
@@ -38,12 +39,17 @@ onMounted(async () => {
 })
 
 function onFileChange(e) {
-  selectedFile.value = e.target.files[0] ?? null
+  selectedFiles.value = [...selectedFiles.value, ...Array.from(e.target.files)]
+  e.target.value = ''  // permite volver a seleccionar los mismos archivos
 }
 
 function onDrop(e) {
   isDragging.value = false
-  selectedFile.value = e.dataTransfer.files[0] ?? null
+  selectedFiles.value = [...selectedFiles.value, ...Array.from(e.dataTransfer.files)]
+}
+
+function removeFile(index) {
+  selectedFiles.value = selectedFiles.value.filter((_, i) => i !== index)
 }
 
 async function handleSubmit() {
@@ -69,9 +75,11 @@ async function handleSubmit() {
       }
       item = createdItem.value
     }
-    if (selectedFile.value) {
-      await store.uploadMedia(item.id, selectedFile.value)
+    for (let i = 0; i < selectedFiles.value.length; i++) {
+      uploadProgress.value = `Subiendo ${i + 1}/${selectedFiles.value.length}...`
+      await store.uploadMedia(item.id, selectedFiles.value[i])
     }
+    uploadProgress.value = ''
     router.push('/content-items')
   } catch (e) {
     error.value = e.response?.data?.message ?? 'Error al guardar. Revisa los datos.'
@@ -226,41 +234,57 @@ const typeOptions = [
               ref="fileInput"
               type="file"
               accept="image/*,video/*"
+              multiple
               class="hidden"
               @change="onFileChange"
             >
 
-            <div v-if="!selectedFile">
+            <!-- Empty state -->
+            <div v-if="!selectedFiles.length">
               <div class="w-10 h-10 bg-[#F5F1EA] rounded-xl flex items-center justify-center mx-auto mb-3">
                 <svg class="w-5 h-5 text-[#A08A7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                 </svg>
               </div>
-              <p class="text-sm text-[#7D5A44] mb-1">Arrastra tu archivo aquí</p>
+              <p class="text-sm text-[#7D5A44] mb-1">Arrastra tus archivos aquí</p>
               <p class="text-xs text-[#D7C9B8]">o haz clic para seleccionar</p>
-              <p class="text-[10px] text-[#D7C9B8] mt-3 tracking-wide">JPG · PNG · MP4 · máx. 500 MB</p>
+              <p class="text-[10px] text-[#D7C9B8] mt-3 tracking-wide">JPG · PNG · MP4 · máx. 500 MB por archivo</p>
             </div>
 
-            <div v-else class="flex items-center justify-center gap-3">
-              <div class="w-8 h-8 bg-[#F5F1EA] rounded-lg flex items-center justify-center">
-                <svg class="w-4 h-4 text-[#7D5A44]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-              </div>
-              <div class="text-left">
-                <p class="text-sm text-[#4A342A]">{{ selectedFile.name }}</p>
-                <p class="text-xs text-[#A08A7A]">{{ formatSize(selectedFile.size) }}</p>
+            <!-- Lista de archivos seleccionados -->
+            <div v-else class="w-full space-y-2 text-left" @click.stop>
+              <div
+                v-for="(file, i) in selectedFiles"
+                :key="i"
+                class="flex items-center gap-3 bg-[#FDFCFB] border border-[#F0EAE2] rounded-lg px-3 py-2"
+              >
+                <div class="w-7 h-7 bg-[#F5F1EA] rounded-lg flex items-center justify-center shrink-0">
+                  <svg class="w-3.5 h-3.5 text-[#7D5A44]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs text-[#4A342A] truncate">{{ file.name }}</p>
+                  <p class="text-[10px] text-[#A08A7A]">{{ formatSize(file.size) }}</p>
+                </div>
+                <button
+                  type="button"
+                  @click="removeFile(i)"
+                  class="text-[#D7C9B8] hover:text-red-400 transition-colors shrink-0"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
               </div>
               <button
                 type="button"
-                @click.stop="selectedFile = null"
-                class="text-[#D7C9B8] hover:text-[#A08A7A] transition-colors ml-2"
+                @click="fileInput?.click()"
+                class="text-xs text-[#A08A7A] hover:text-[#4A342A] transition-colors pt-1"
               >
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+                + Añadir más archivos
               </button>
             </div>
           </div>
@@ -316,7 +340,7 @@ const typeOptions = [
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
             </svg>
-            {{ submitting ? 'Guardando...' : (isEdit ? 'Guardar cambios' : 'Crear contenido') }}
+            {{ uploadProgress || (submitting ? 'Guardando...' : (isEdit ? 'Guardar cambios' : 'Crear contenido')) }}
           </button>
         </div>
 
