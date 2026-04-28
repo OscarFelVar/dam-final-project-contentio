@@ -12,9 +12,8 @@
     .card { max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #E8E0D8; }
 
     /* Header */
-    .header { background-color: #4A342A; padding: 28px 40px; text-align: center; }
-    .logo-text { color: #ffffff; font-size: 22px; font-weight: 600; letter-spacing: 0.08em; }
-    .logo-dot { color: #D7C9B8; }
+    .header { background-color: #ffffff; padding: 28px 40px 24px; text-align: center; border-bottom: 3px solid #4A342A; }
+    .header img { height: 40px; width: auto; display: block; margin: 0 auto; }
 
     /* Body */
     .body { padding: 36px 40px; }
@@ -50,7 +49,7 @@
 
       <!-- Header -->
       <div class="header">
-        <div class="logo-text">Contentio<span class="logo-dot">.</span></div>
+        <img src="https://contentio.tech/logo.png" alt="Contentio">
       </div>
 
       <!-- Body -->
