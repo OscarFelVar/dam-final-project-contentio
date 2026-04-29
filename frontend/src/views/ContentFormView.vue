@@ -52,7 +52,7 @@ function removeFile(index) {
   selectedFiles.value = selectedFiles.value.filter((_, i) => i !== index)
 }
 
-async function handleSubmit() {
+async function handleSubmit(sendForReview = false) {
   error.value      = null
   submitting.value = true
   try {
@@ -80,6 +80,9 @@ async function handleSubmit() {
       await store.uploadMedia(item.id, selectedFiles.value[i])
     }
     uploadProgress.value = ''
+    if (sendForReview && !isEdit.value) {
+      await store.transition(item.id, 'ready_for_review')
+    }
     router.push('/content-items')
   } catch (e) {
     error.value = e.response?.data?.message ?? 'Error al guardar. Revisa los datos.'
@@ -324,23 +327,37 @@ const typeOptions = [
         </div>
 
         <!-- Actions -->
-        <div class="p-6 bg-[#FDFCFB] flex items-center justify-end gap-3 rounded-b-xl">
+        <div class="p-6 bg-[#FDFCFB] flex flex-wrap items-center justify-end gap-3 rounded-b-xl">
           <RouterLink
             to="/content-items"
             class="px-5 py-2.5 border border-[#E8E0D8] text-[#A08A7A] rounded-lg text-sm hover:bg-white transition-colors"
           >
             Cancelar
           </RouterLink>
+
+          <!-- Botón borrador (siempre visible) -->
           <button
-            type="submit"
+            type="button"
             :disabled="submitting"
+            @click="handleSubmit(false)"
+            class="px-6 py-2.5 border border-[#4A342A] text-[#4A342A] hover:bg-[#F5F1EA] disabled:opacity-50 rounded-lg text-sm transition-colors"
+          >
+            {{ submitting ? 'Guardando...' : (isEdit ? 'Guardar cambios' : 'Guardar borrador') }}
+          </button>
+
+          <!-- Botón enviar a revisión (solo en creación) -->
+          <button
+            v-if="!isEdit"
+            type="button"
+            :disabled="submitting"
+            @click="handleSubmit(true)"
             class="px-6 py-2.5 bg-[#4A342A] hover:bg-[#7D5A44] disabled:opacity-50 text-white rounded-lg text-sm transition-colors flex items-center gap-2"
           >
             <svg v-if="!submitting" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
             </svg>
-            {{ uploadProgress || (submitting ? 'Guardando...' : (isEdit ? 'Guardar cambios' : 'Crear contenido')) }}
+            {{ uploadProgress || (submitting ? 'Enviando...' : 'Guardar y enviar a revisión') }}
           </button>
         </div>
 

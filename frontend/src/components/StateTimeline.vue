@@ -79,7 +79,7 @@ function formatDate(d) {
             </div>
             <span class="text-[10px] text-[#D7C9B8] shrink-0">{{ formatDate(h.created_at) }}</span>
           </div>
-          <p class="text-xs text-[#A08A7A] mt-0.5">por {{ h.user?.name ?? '—' }}</p>
+          <p class="text-xs text-[#A08A7A] mt-0.5">por {{ h.user?.name ?? 'Sistema' }}</p>
         </div>
       </div>
     </div>
