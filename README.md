@@ -9,7 +9,7 @@ Contentio permite a realizadores audiovisuales subir contenido (reels, posts, st
 ## Características principales
 
 - **Gestión de contenidos** — Crear, editar y organizar piezas audiovisuales por cliente y tipo
-- **Subida de media** — Imágenes y vídeos hasta 100 MB
+- **Subida de media** — Imágenes y vídeos hasta 500 MB
 - **Anotaciones visuales** — Pines sobre imágenes al estilo Figma para feedback preciso
 - **Flujo de aprobación** — State machine: borrador → revisión → aprobado/corrección/rechazado
 - **Comentarios** — Hilo de conversación por contenido
@@ -66,7 +66,7 @@ docker compose exec php php artisan storage:link
 | API (Laravel) | http://localhost:8080/api |
 | Base de datos | localhost:5433 |
 
-**Credenciales de prueba:**
+**Credenciales de prueba (entorno local):**
 
 | Email | Contraseña | Rol |
 |---|---|---|
@@ -74,6 +74,19 @@ docker compose exec php php artisan storage:link
 | `test@example.com` | `password123` | agency |
 | `cliente@clinica.com` | `password123` | clinic |
 | `ana@bellezavalencia.com` | `password123` | clinic |
+
+---
+
+## Producción
+
+La aplicación está desplegada en **https://contentio.tech**
+
+**Credenciales de acceso para evaluación:**
+
+| Email | Contraseña | Rol |
+|---|---|---|
+| `felipe.cvvargas@gmail.com` | `Felipe2026!` | agency |
+| `jhonnyvargas721@gmail.com` | `Jhonny2026!` | clinic |
 
 ---
 
@@ -143,9 +156,13 @@ contentio/
 ├── docs/
 │   ├── implementacion/       ← Documentación técnica por sprint
 │   └── memoria/              ← Memoria del TFG
+├── database/
+│   └── schema.sql            ← Esquema PostgreSQL exportado
 ├── docker-compose.yml        ← Entorno de desarrollo
 ├── docker-compose.prod.yml   ← Entorno de producción
-└── deploy.sh                 ← Script de despliegue inicial
+├── deploy.sh                 ← Script de despliegue inicial
+├── update.sh                 ← Script de actualización
+└── backup.sh                 ← Script de copias de seguridad
 ```
 
 ---
@@ -165,13 +182,18 @@ contentio/
 | Método | Ruta | Rol |
 |---|---|---|
 | POST | `/api/auth/login` | — |
+| POST | `/api/auth/logout` | any |
 | GET | `/api/auth/me` | any |
-| GET/POST | `/api/content-items` | agency |
-| GET/PUT/DELETE | `/api/content-items/{id}` | agency |
+| GET/POST | `/api/clinics` | agency |
+| GET/POST/DELETE | `/api/clinics/{id}/users` | agency |
+| GET/POST | `/api/content-items` | agency, clinic, admin |
+| GET/PUT/DELETE | `/api/content-items/{id}` | agency, clinic, admin |
 | POST | `/api/content-items/{id}/media` | agency |
-| POST | `/api/content-items/{id}/transition` | agency, clinic |
-| GET/POST | `/api/content-items/{id}/comments` | agency, clinic |
-| GET/POST | `/api/media-assets/{id}/annotations` | agency, clinic |
+| POST | `/api/content-items/{id}/transition` | agency, clinic, admin |
+| GET/POST | `/api/content-items/{id}/comments` | agency, clinic, admin |
+| GET/POST | `/api/media-assets/{id}/annotations` | agency, clinic, admin |
+| GET | `/api/admin/stats` | admin |
+| GET/POST/DELETE | `/api/admin/users` | admin |
 
 Autenticación mediante **Laravel Sanctum** (token Bearer).
 
