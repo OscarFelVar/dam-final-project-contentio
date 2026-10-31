@@ -7,6 +7,12 @@ Plataforma de gestión y aprobación de contenido audiovisual entre agencias cre
 
 Contentio permite a realizadores audiovisuales subir contenido (reels, posts, stories), recibir feedback visual mediante anotaciones sobre las imágenes, y gestionar el ciclo de aprobación con sus clientes de forma ordenada y trazable.
 
+![Visor de revisión con anotaciones y comentarios](docs/screenshots/visor-anotaciones.png)
+*Visor de revisión: el cliente coloca pines numerados sobre la imagen, comenta y cambia el estado del contenido.*
+
+![Panel de control](docs/screenshots/dashboard.png)
+*Panel de control: resumen por estado y actividad reciente.*
+
 ---
 
 ## Características principales
@@ -32,6 +38,15 @@ Contentio permite a realizadores audiovisuales subir contenido (reels, posts, st
 | Infraestructura | Docker Compose |
 | Tests backend | PHPUnit 11 |
 | Tests E2E | Playwright |
+
+### Modelo de datos
+
+<details>
+<summary>Ver diagrama entidad-relación</summary>
+
+![Modelo de base de datos](docs/screenshots/modelo-bbdd.png)
+
+</details>
 
 ---
 
