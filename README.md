@@ -82,7 +82,7 @@ docker compose exec php php artisan storage:link
 
 ## Producción
 
-Durante la evaluación, la aplicación estuvo desplegada en `https://contentio.tech` (VPS OVH, Docker Compose, Nginx + Let's Encrypt). Las cuentas de evaluación se han desactivado, y ese despliegue ya no corresponde a la versión de este repositorio.
+Durante la evaluación, la aplicación estuvo desplegada en `https://contentio.tech` (VPS OVH, Docker Compose, Nginx + Let's Encrypt). Las cuentas de evaluación ya no están disponibles públicamente, y ese despliegue ya no corresponde a la versión de este repositorio.
 
 Documentación del TFG: [Memoria](docs/memoria/Memoria_Contentio.pdf) · [Anteproyecto](docs/memoria/Anteproyecto_Contentio.pdf)
 
