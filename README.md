@@ -1,5 +1,8 @@
 # Contentio
 
+> 📦 **Proyecto académico archivado.** Trabajo de Fin de Grado del CFGS en Desarrollo de Aplicaciones Multiplataforma (Prometeo The Power FP, 2026), calificado con un **10**.
+> La versión evaluada corresponde a la release [`v1.0-tfg`](https://github.com/OscarFelVar/dam-final-project-contentio/releases/tag/v1.0-tfg). El proyecto continúa como producto en un repositorio privado independiente, por lo que este repositorio ya no recibe cambios.
+
 Plataforma de gestión y aprobación de contenido audiovisual entre agencias creativas y sus clientes.
 
 Contentio permite a realizadores audiovisuales subir contenido (reels, posts, stories), recibir feedback visual mediante anotaciones sobre las imágenes, y gestionar el ciclo de aprobación con sus clientes de forma ordenada y trazable.
@@ -79,14 +82,9 @@ docker compose exec php php artisan storage:link
 
 ## Producción
 
-La aplicación está desplegada en **https://contentio.tech**
+Durante la evaluación, la aplicación estuvo desplegada en `https://contentio.tech` (VPS OVH, Docker Compose, Nginx + Let's Encrypt). Las cuentas de evaluación se han desactivado, y ese despliegue ya no corresponde a la versión de este repositorio.
 
-**Credenciales de acceso para evaluación:**
-
-| Email | Contraseña | Rol |
-|---|---|---|
-| `felipe.cvvargas@gmail.com` | `Felipe2026!` | agency |
-| `jhonnyvargas721@gmail.com` | `Jhonny2026!` | clinic |
+Documentación del TFG: [Memoria](docs/memoria/Memoria_Contentio.pdf) · [Anteproyecto](docs/memoria/Anteproyecto_Contentio.pdf)
 
 ---
 
